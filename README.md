@@ -20,6 +20,13 @@ To work with the elastic stack version you want, from 5 and 7, open a console in
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
 
+---
+**NOTE**
+
+With this configuration the content of the elasticsearch cluster itself will be cleared by a ```docker-compose down```.
+
+---
+
 #Requirements
 In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). And you might also wants to check those [production recomandations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
@@ -33,7 +40,7 @@ You can follow that everything is starting smoothly with:
 
 ```docker-compose logs -f```
 
-Once it's started check that all is working:
+Once it's started check all is working:
 
 ```docker-compose ps```
 
@@ -44,7 +51,7 @@ You might have notice that there are 3 instances of the elasticms: ems_mysql, em
 
 ###Check elasticsearch cluster's health
 Go to the [Kibana dev console](http://kibana.localhost/app/dev_tools#/console) and check the cluster health:
-```json
+```
 GET _cluster/health
 ```
 
@@ -92,7 +99,7 @@ docker-compose exec -e PGUSER=postgres -e PGPASSWORD=adminpg -T postgres psql -c
 You can use the ``../drop_pgsql.sh demo`` to drop the database.
 
 ####MySQL
-To initiate a postgres DB run ```./init_mysql.sh demo``` or you can launch those commands:
+To initiate a postgres DB run ```../init_mysql.sh demo``` or you can launch those commands:
 
 ```
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE DATABASE IF NOT EXISTS demo;"
@@ -102,7 +109,7 @@ docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE USER
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "GRANT ALL PRIVILEGES ON demo.* TO demo@'localhost';"
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "show databases;"
 ```
-You can use the ``./drop_mysql.sh demo`` to drop the database.
+You can use the ``../drop_mysql.sh demo`` to drop the database.
 
 ###SQLite
 There is nothing to do at this time.
@@ -111,9 +118,47 @@ There is nothing to do at this time.
 There is currently no support for other RDBMS, but if the RDBMS considered is currently [supported by doctrine](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/platforms.html) you will be able to easily generate the database schema as well. So up to you to create DB.      
 
 ##Instantiate the database's schema
-To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts.
+To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts. In order to access to the Symfony console we will execute a bash in the elasticms processes with the following command:
+```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```
+
+    Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```.
+
+Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scipts on its own.  
+
+You should now be able to show the elasticms [login window](http://demo-admin.localhost). But you don't have any account yet. And you can see that everything looks good by checking the [elasticms's status page](http://demo-admin.localhost/status).
+
+##About the Symfony console
+In the configs folder there is 4 folders:
+- ems-pgsql
+- ems-mysql
+- ems-sqlite
+- skeleton
+
+You can create as many Dotenv files as you want in those folder. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you have to add in Traefik via the docker's label in the corresponding process definition:
+
+```yaml
+  ems_pgsql:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
+      - "traefik.http.routers.demo-admin.entrypoints=web"
+      - "traefik.http.routers.demo-pgsql-admin.rule=Host(`demo-pgsql-admin.localhost`)"
+      - "traefik.http.routers.demo-pgsql-admin.entrypoints=web"
+      - "traefik.http.routers.demo-admin-dev.rule=Host(`demo-admin-dev.localhost`)"
+      - "traefik.http.routers.demo-admin-dev.entrypoints=web"
+```
+ When you update a Dotenv file you have to recreate the docker-compose process: ```docker-compose up -d --force-recreate ems_pgsql```.
+ 
+ So an ems_pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.
+ 
+ But, it's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts are named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
+ Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
+
+##Create a user
+Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --super-admin`` and answer to the questions. You are now able to login [elasticms](http://demo-admin.localhost).
+
 
 
 ##To do's
-- Add an email server docker image image in order to be able to debug emails
+- Add an email server docker image in order to be able to debug emails
 - Add a elastic6 docker-compose.yml file
