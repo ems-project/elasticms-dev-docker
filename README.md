@@ -20,13 +20,6 @@ To work with the elastic stack version you want, from 5 and 7, open a console in
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
 
----
-**NOTE**
-
-With this configuration the content of the elasticsearch cluster itself will be cleared by a ```docker-compose down```.
-
----
-
 #Requirements
 In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). And you might also wants to check those [production recomandations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 

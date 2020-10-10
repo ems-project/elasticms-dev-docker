@@ -97,7 +97,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ../data/postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
   mariadb:
     image: linuxserver/mariadb
@@ -110,7 +110,7 @@ services:
       - MYSQL_ROOT_PASSWORD=mariadb
       - TZ=Europe/Brussels
     volumes:
-      - ../data/mariadb:/config
+      - mariadb:/config
 
   tika:
     image: apache/tika
@@ -126,7 +126,7 @@ services:
     image: minio/minio
     container_name: minio
     volumes:
-      - ../data/s3:/data
+      - s3:/data
 #    ports:
 #      - 9000:9000
     environment:
@@ -225,4 +225,10 @@ volumes:
   data502:
     driver: local
   redis:
+    driver: local
+  s3:
+    driver: local
+  mariadb:
+    driver: local
+  postgres:
     driver: local
