@@ -42,7 +42,7 @@ services:
     ports:
       - 9200:9200
     volumes:
-      - data501:/usr/share/elasticsearch/data
+      - data01:/usr/share/elasticsearch/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -64,7 +64,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data502:/usr/share/elasticsearch/data
+      - data02:/usr/share/elasticsearch/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -255,9 +255,9 @@ services:
       - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
 
 volumes:
-  data501:
+  data01:
     driver: local
-  data502:
+  data02:
     driver: local
   redis:
     driver: local

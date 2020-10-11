@@ -17,21 +17,21 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-# This whoami image is small and easy application to test traefik configuration
-#  whoami:
-#    image: "containous/whoami"
-#    container_name: "simple-service"
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-#      - "traefik.http.routers.whoami.entrypoints=web"
+# This image is a small and easy application to test traefik configuration
+  whoami:
+    image: "containous/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: es01
     environment:
       - node.name=es01
-      - cluster.name=es-docker-cluster
+      - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
@@ -40,16 +40,22 @@ services:
       memlock:
         soft: -1
         hard: -1
+    ports:
+      - 9200:9200
     volumes:
       - data01:/usr/share/elasticsearch/data
-#    ports:
-#      - 9200:9200
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.es.rule=Host(`es.localhost`)"
+      - "traefik.http.routers.es.entrypoints=web"
+      - "traefik.http.routers.es.service=es"
+      - "traefik.http.services.es.loadbalancer.server.port=9200"
   es02:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: es02
     environment:
       - node.name=es02
-      - cluster.name=es-docker-cluster
+      - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es03
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
@@ -60,12 +66,18 @@ services:
         hard: -1
     volumes:
       - data02:/usr/share/elasticsearch/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.es.rule=Host(`es.localhost`)"
+      - "traefik.http.routers.es.entrypoints=web"
+      - "traefik.http.routers.es.service=es"
+      - "traefik.http.services.es.loadbalancer.server.port=9200"
   es03:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: es03
     environment:
       - node.name=es03
-      - cluster.name=es-docker-cluster
+      - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es02
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
@@ -76,13 +88,20 @@ services:
         hard: -1
     volumes:
       - data03:/usr/share/elasticsearch/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.es.rule=Host(`es.localhost`)"
+      - "traefik.http.routers.es.entrypoints=web"
+      - "traefik.http.routers.es.service=es"
+      - "traefik.http.services.es.loadbalancer.server.port=9200"
 
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:7.9.2
-#    ports:
-#      - 5601:5601
+    ports:
+      - 5601:5601
     environment:
+      - TZ=Europe/Brussels
       - ELASTICSEARCH_HOSTS=http://es01:9200
       - SERVER_NAME=kibana.localhost
     labels:
@@ -103,7 +122,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ../data/postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
   mariadb:
     image: linuxserver/mariadb
@@ -116,7 +135,7 @@ services:
       - MYSQL_ROOT_PASSWORD=mariadb
       - TZ=Europe/Brussels
     volumes:
-      - ../data/mariadb:/config
+      - mariadb:/config
 
   tika:
     image: apache/tika
@@ -130,8 +149,9 @@ services:
 
   minio:
     image: minio/minio
+    container_name: minio
     volumes:
-      - ../data/s3:/data
+      - s3:/data
 #    ports:
 #      - 9000:9000
     environment:
@@ -145,10 +165,18 @@ services:
       retries: 3
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.minio.rule=Host(`s3.docker.localhost`)"
+      - "traefik.http.routers.minio.rule=Host(`minio.localhost`)"
       - "traefik.http.routers.minio.service=minio"
       - "traefik.http.routers.minio.entrypoints=web"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
+
+  redis:
+    image: centos/redis-5-centos7
+    container_name: redis
+#    ports:
+#      - 6379:6379
+    volumes:
+      - redis:/var/lib/redis/data
 
   ems_pgsql:
     image: elasticms/admin
@@ -161,23 +189,93 @@ services:
       - PHP_FPM_MAX_CHILDREN=4
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
       - CONTAINER_HEAP_PERCENT=0.8
-      - ELASTICSEARCH_VERSION=7
+      - ELASTICSEARCH_VERSION=5.3
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
+      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
       - MAILER_URL=null://localhost
       - EMS_FROM_EMAIL_ADDRESS=ems_pgsql@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (pgsql)"
+      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
-      - ../configs/ems_pgsql:/opt/configs
+      - ../configs/ems-pgsql:/opt/configs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
       - "traefik.http.routers.demo-admin.entrypoints=web"
+      - "traefik.http.routers.demo-pgsql-admin.rule=Host(`demo-pgsql-admin.localhost`)"
+      - "traefik.http.routers.demo-pgsql-admin.entrypoints=web"
       - "traefik.http.routers.demo-admin-dev.rule=Host(`demo-admin-dev.localhost`)"
       - "traefik.http.routers.demo-admin-dev.entrypoints=web"
+      - "traefik.http.routers.demo-pgsql-admin-dev.rule=Host(`demo-pgsql-admin-dev.localhost`)"
+      - "traefik.http.routers.demo-pgsql-admin-dev.entrypoints=web"
+
+  ems_mysql:
+    image: elasticms/admin
+    container_name: ems_mysql
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - PHP_FPM_MAX_CHILDREN=4
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
+      - CONTAINER_HEAP_PERCENT=0.8
+      - ELASTICSEARCH_VERSION=5.6
+      - ES_ENDPOINT_URL=http://es01:9200
+      - TIKA_ENDPOINT_URL=http://tika:9998
+      - TIKA_SERVER=http://tika:9998
+      - DB_DRIVER=mysql
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - MAILER_URL=null://localhost
+      - EMS_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
+      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+    volumes:
+      - ../configs/ems-mysql:/opt/configs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
+      - "traefik.http.routers.demo-mysql-admin.entrypoints=web"
+      - "traefik.http.routers.demo-mysql-admin-dev.rule=Host(`demo-mysql-admin-dev.localhost`)"
+      - "traefik.http.routers.demo-mysql-admin-dev.entrypoints=web"
+
+  ems_sqlite:
+    image: elasticms/admin
+    container_name: ems_sqlite
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - PHP_FPM_MAX_CHILDREN=4
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
+      - CONTAINER_HEAP_PERCENT=0.8
+      - ELASTICSEARCH_VERSION=5.6
+      - ES_ENDPOINT_URL=http://es01:9200
+      - TIKA_ENDPOINT_URL=http://tika:9998
+      - TIKA_SERVER=http://tika:9998
+      - DB_DRIVER=sqlite
+      - "DB_HOST=127.0.0.1"
+      - "DB_PORT="
+      - "DB_USER="
+      - "DB_PASSWORD=\"\""
+      - MAILER_URL=null://localhost
+      - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
+      - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
+      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+    volumes:
+      - ../configs/ems-sqlite:/opt/configs
+      - ../databases:/opt/sqlite
+      - ../configs/temp/sqlite-framework.yaml:/opt/src/config/packages/framework.yaml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
+      - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
+      - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
+      - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
 
 
 volumes:
@@ -186,4 +284,14 @@ volumes:
   data02:
     driver: local
   data03:
+    driver: local
+  redis:
+    driver: local
+  s3:
+    driver: local
+  mariadb:
+    driver: local
+  postgres:
+    driver: local
+  sqlite:
     driver: local

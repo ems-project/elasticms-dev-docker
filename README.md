@@ -23,7 +23,10 @@ If you want to switch from one version to the other execute ```docker-compose do
 ---
 **NOTE**
 
-The command ```docker-compose down``` won't delete persisted data (i.e. database's data)', nevertheless if you switch from elastic stack version to another be aware elasticsearch data are not share. You'll have to reindex your content if something has changed in the data source.
+The command ```docker-compose down``` won't delete persisted data (i.e. database's data) in Docker's volumes, nevertheless if you switch from an elastic stack version to another be aware Dockers volumes are not share between docker-compose projects. You'll have to recreate and reindex your content. You may want to mount local folders instead of Docker volumes. I.e. for Postgres you can change the line ```- postgres:/var/lib/postgresql/data``` by ``- ../databases/postgres:/var/lib/postgresql/data``. If so::
+- Don't do that for elasticsearch data, they are not compatible from one version to the other
+- If something as change in a datasource consider to reindex it elasticsearch
+
 
 ---
 
@@ -166,4 +169,4 @@ Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --supe
 - Add a elastic6 docker-compose.yml file
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
 - Explain how to load a sql dump file
-_ Explain how to work with a bundle repository
+- Explain how to work with a bundle repository
