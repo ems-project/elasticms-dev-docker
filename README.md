@@ -167,7 +167,7 @@ Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --supe
 ##Developments
 
 ###Debug emails
-You can check sent email with [MailHog](http://mailhog.localhost/#).
+You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
 ##To dos
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
