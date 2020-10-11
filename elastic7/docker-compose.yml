@@ -178,6 +178,19 @@ services:
     volumes:
       - redis:/var/lib/redis/data
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+#    ports:
+#      - 1025:1025 # smtp server
+#      - 8025:8025 # web ui
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
+      - "traefik.http.routers.mailhog.service=mailhog"
+      - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
+
   ems_pgsql:
     image: elasticms/admin
     container_name: ems_pgsql
@@ -196,7 +209,7 @@ services:
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
-      - MAILER_URL=null://localhost
+      - MAILER_URL=smtp://mailhog:1025
       - EMS_FROM_EMAIL_ADDRESS=ems_pgsql@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (pgsql)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
@@ -230,7 +243,7 @@ services:
       - DB_DRIVER=mysql
       - DB_HOST=mariadb
       - DB_PORT=3306
-      - MAILER_URL=null://localhost
+      - MAILER_URL=smtp://mailhog:1025
       - EMS_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
@@ -262,7 +275,7 @@ services:
       - "DB_PORT="
       - "DB_USER="
       - "DB_PASSWORD=\"\""
-      - MAILER_URL=null://localhost
+      - MAILER_URL=smtp://mailhog:1025
       - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
@@ -276,7 +289,6 @@ services:
       - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
       - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
       - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
-
 
 volumes:
   data01:

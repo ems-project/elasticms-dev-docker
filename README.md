@@ -164,8 +164,13 @@ Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --supe
 1. Define the publication environments
 2. Define the content types (encoding forms and mapping)
 
+##Developments
+
+###Debug emails
+You can check sent email with [MailHog](http://mailhog.localhost/#).
+
 ##To dos
-- Add an email server docker image in order to be able to debug emails
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
 - Explain how to load a sql dump file
+- Skeleton
 - Explain how to work with a bundle git repository
