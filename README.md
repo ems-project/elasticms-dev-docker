@@ -20,6 +20,13 @@ To work with the elastic stack version you want, from 5 to 7, open a console in 
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
 
+---
+**NOTE**
+
+The command ```docker-compose down``` won't delete persisted data (i.e. database's data)', nevertheless if you switch from elastic stack version to another be aware elasticsearch data are not share. You'll have to reindex your content if something has changed in the data source.
+
+---
+
 #Requirements
 In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
@@ -105,7 +112,7 @@ docker-compose exec mariadb mysql --user=root --password=mariadb -e "show databa
 You can use the ``../drop_mysql.sh demo`` to drop the database.
 
 ###SQLite
-There is nothing to do at this time. A demo.db file has been already created in the databases folder by the elasticms boot script.
+There is nothing to do at this time. A demo.db file has been already created in the ``databases`` folder by the elasticms boot script.
 
 ###Other RDBMS
 There is currently no support for other RDBMS, but if the RDBMS considered is currently [supported by doctrine](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/platforms.html) you will be able to easily generate the database schema as well. So up to you to use the database platform you want.      
@@ -159,3 +166,4 @@ Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --supe
 - Add a elastic6 docker-compose.yml file
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
 - Explain how to load a sql dump file
+_ Explain how to work with a bundle repository
