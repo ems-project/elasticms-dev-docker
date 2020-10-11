@@ -166,7 +166,6 @@ Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --supe
 
 ##To dos
 - Add an email server docker image in order to be able to debug emails
-- Add a elastic6 docker-compose.yml file
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
 - Explain how to load a sql dump file
-- Explain how to work with a bundle repository
+- Explain how to work with a bundle git repository
