@@ -215,6 +215,7 @@ services:
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
       - ../configs/ems-pgsql:/opt/configs
+      - ../configs/samples:/opt/samples
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"

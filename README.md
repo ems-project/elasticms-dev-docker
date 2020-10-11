@@ -160,9 +160,27 @@ You can create as many Dotenv files as you want in those folders. Per folder a v
 ##Create a user
 Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --super-admin`` and answer to the questions. You are now able to login [elasticms](http://demo-admin.localhost).
 
+##Create a minio demo bucket
+Go to the [minio interface](http://minio.localhost/minio/login) and login with the credentials:
+- Access key: ``accesskey``
+- Secret key: ``secretkey``
+In the bottom-right corner click on the ``+`` button and select  ``Create bucket``. Name it ``demo``. 
+
 ##Configure your content
 1. Define the publication environments
 2. Define the content types (encoding forms and mapping)
+
+##Load the demo website
+```
+#Load the sample SQL dump
+docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql
+#List publication environments
+docker-compose exec ems_pgsql demo ems:environment:list
+#Index environments
+docker-compose exec ems_pgsql demo ems:environment:rebuild preview
+docker-compose exec ems_pgsql demo ems:environment:rebuild template
+docker-compose exec ems_pgsql demo ems:environment:rebuild live
+```
 
 ##Developments
 
@@ -171,6 +189,6 @@ You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
 ##To dos
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
-- Explain how to load a sql dump file
+- Load the skeleton skin archive
 - Skeleton
 - Explain how to work with a bundle git repository
