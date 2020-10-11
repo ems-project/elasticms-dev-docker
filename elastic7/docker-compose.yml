@@ -17,7 +17,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-# This whoami image is small and easy applicatioin to test traefik configuration
+# This whoami image is small and easy application to test traefik configuration
 #  whoami:
 #    image: "containous/whoami"
 #    container_name: "simple-service"

@@ -17,14 +17,14 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-# This whoami image is small and easy applicatioin to test traefik configuration
-#  whoami:
-#    image: "containous/whoami"
-#    container_name: "simple-service"
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-#      - "traefik.http.routers.whoami.entrypoints=web"
+# This image is small and easy application to test traefik configuration
+  whoami:
+    image: "containous/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.16
@@ -210,13 +210,47 @@ services:
       - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
-      - ../configs/ems-pgsql:/opt/configs
+      - ../configs/ems-mysql:/opt/configs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
       - "traefik.http.routers.demo-mysql-admin.entrypoints=web"
       - "traefik.http.routers.demo-mysql-admin-dev.rule=Host(`demo-mysql-admin-dev.localhost`)"
       - "traefik.http.routers.demo-mysql-admin-dev.entrypoints=web"
+
+  ems_sqlite:
+    image: elasticms/admin
+    container_name: ems_sqlite
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - PHP_FPM_MAX_CHILDREN=4
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
+      - CONTAINER_HEAP_PERCENT=0.8
+      - ELASTICSEARCH_VERSION=5.6
+      - ES_ENDPOINT_URL=http://es01:9200
+      - TIKA_ENDPOINT_URL=http://tika:9998
+      - TIKA_SERVER=http://tika:9998
+      - DB_DRIVER=sqlite
+      - "DB_HOST=127.0.0.1"
+      - "DB_PORT="
+      - "DB_USER="
+      - "DB_PASSWORD=\"\""
+      - MAILER_URL=null://localhost
+      - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
+      - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
+      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+    volumes:
+      - ../configs/ems-sqlite:/opt/configs
+      - ../databases:/opt/sqlite
+      - ../configs/temp/sqlite-framework.yaml:/opt/src/config/packages/framework.yaml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
+      - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
+      - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
+      - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
 
 
 volumes:
@@ -231,4 +265,6 @@ volumes:
   mariadb:
     driver: local
   postgres:
+    driver: local
+  sqlite:
     driver: local

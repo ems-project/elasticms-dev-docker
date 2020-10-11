@@ -14,14 +14,14 @@ This project contains a ready to use elasticms environment for development purpo
 - elasticms (the ems content management application)
 - skeleton (the ems content delivery application)
 
-To work with the elastic stack version you want, from 5 and 7, open a console in one of the following folders:
+To work with the elastic stack version you want, from 5 to 7, open a console in one of the following folders:
 - elastic5
 - elastic7
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
 
 #Requirements
-In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). And you might also wants to check those [production recomandations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
 ##Baby step
 ###Launch docker-compose
@@ -105,29 +105,29 @@ docker-compose exec mariadb mysql --user=root --password=mariadb -e "show databa
 You can use the ``../drop_mysql.sh demo`` to drop the database.
 
 ###SQLite
-There is nothing to do at this time.
+There is nothing to do at this time. A demo.db file has been already created in the databases folder by the elasticms boot script.
 
 ###Other RDBMS
-There is currently no support for other RDBMS, but if the RDBMS considered is currently [supported by doctrine](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/platforms.html) you will be able to easily generate the database schema as well. So up to you to create DB.      
+There is currently no support for other RDBMS, but if the RDBMS considered is currently [supported by doctrine](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/platforms.html) you will be able to easily generate the database schema as well. So up to you to use the database platform you want.      
 
 ##Instantiate the database's schema
 To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts. In order to access to the Symfony console we will execute a bash in the elasticms processes with the following command:
-```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```
+```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```.
 
     Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```.
 
-Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scipts on its own.  
+Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scripts on its own.  
 
-You should now be able to show the elasticms [login window](http://demo-admin.localhost). But you don't have any account yet. And you can see that everything looks good by checking the [elasticms's status page](http://demo-admin.localhost/status).
+You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#Create a user). You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
 
 ##About the Symfony console
-In the configs folder there is 4 folders:
+In the ``configs`` folder there are 4 folders:
 - ems-pgsql
 - ems-mysql
 - ems-sqlite
 - skeleton
 
-You can create as many Dotenv files as you want in those folder. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you have to add in Traefik via the docker's label in the corresponding process definition:
+You can create as many Dotenv files as you want in those folders. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you have to add in Traefik via the docker's label in the corresponding process definition:
 
 ```yaml
   ems_pgsql:
@@ -142,16 +142,20 @@ You can create as many Dotenv files as you want in those folder. Per folder a vi
 ```
  When you update a Dotenv file you have to recreate the docker-compose process: ```docker-compose up -d --force-recreate ems_pgsql```.
  
- So an ems_pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.
+ So an elasticms pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.
  
- But, it's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts are named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
+ It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have being named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
  Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
 
 ##Create a user
 Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --super-admin`` and answer to the questions. You are now able to login [elasticms](http://demo-admin.localhost).
 
+##Configure your content
+1. Define the publication environments
+2. Define the content types (encoding forms and mapping)
 
-
-##To do's
+##To dos
 - Add an email server docker image in order to be able to debug emails
 - Add a elastic6 docker-compose.yml file
+- Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
+- Explain how to load a sql dump file
