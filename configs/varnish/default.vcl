@@ -1,8 +1,21 @@
 vcl 4.0;
 
+import std;
+
 backend default {
   .host = "skeleton";
   .port = "9000";
+  .probe = {
+      .request =
+        "HEAD /index.php?varnish HTTP/1.1"
+        "Host: default.localhost"
+        "Connection: close"
+        "User-Agent: Varnish Health Probe";
+      .timeout = 1s;
+      .interval = 5s;
+      .window = 5;
+      .threshold = 3;
+  }
 }
 
 sub vcl_recv {
@@ -12,6 +25,11 @@ sub vcl_recv {
   } else {
     set req.http.X-Forwarded-Port = "80";
   }
+
+ if (std.healthy(default)) {
+   // change the behavior for healthy backends: Cap grace to 10s
+   set req.grace = 10s;
+ }
 
 
   // Remove all cookies except the session ID.
@@ -31,7 +49,8 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
-  set beresp.ttl = 180m;
+  set beresp.ttl = 10s;
+  set beresp.grace = 24h;
 
   // Check for ESI acknowledgement and remove Surrogate-Control header
   if (beresp.http.Surrogate-Control ~ "ESI/1.0") {
@@ -68,4 +87,12 @@ sub vcl_deliver {
   }
   # (un)comment the following line to show the information in the response
   set resp.http.x-cache = req.http.x-cache;
+
+  #For monitoring
+  if (std.healthy(default)) {
+    set resp.http.x-healthy = "true";
+  }
+  else {
+    set resp.http.x-healthy = "false";
+  }
 }
