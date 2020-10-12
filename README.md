@@ -13,6 +13,7 @@ This project contains a ready to use elasticms environment for development purpo
 - redis (to store and share PHP session)
 - elasticms (the ems content management application)
 - skeleton (the ems content delivery application)
+- varnish (reverse proxy)
 
 To work with the elastic stack version you want, from 5 to 7, open a console in one of the following folders:
 - elastic5
@@ -229,8 +230,11 @@ In this example we are assuming that all your git projects are locate into the s
 You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
 ##To dos
-- Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
+- Find a way to select the session handler (~, RDBMS or Redis)
 - Load the skeleton frontend archive with a better command
 - Script to do all tasks from scratch to the skeleton website
-- Find a way to directly take a dump
-- Support Postgres 13
+- Find a way to directly take a SQL dump
+- Support Postgres 13 in elasticms and skeleton
+- Configure varnish grace period
+- Add ESI support
+- Debug synchronize between storage services
