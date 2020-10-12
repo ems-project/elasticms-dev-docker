@@ -90,7 +90,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres
+    image: postgres:12
 #    ports:
 #      - "5432:5432"
     environment:
@@ -193,6 +193,8 @@ services:
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
+#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
@@ -227,6 +229,8 @@ services:
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
       - ../configs/ems-mysql:/opt/configs
+#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
@@ -261,12 +265,50 @@ services:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
       - ../configs/temp/sqlite-framework.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
       - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
       - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
       - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
+
+  skeleton:
+    image: elasticms/website-skeleton
+    container_name: skeleton
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+      - APP_ENV=dev
+      - PHP_FPM_MAX_CHILDREN=8
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=64
+      - CONTAINER_HEAP_PERCENT=0.8
+      - ES_ENDPOINT_URL=http://es501:9200
+      - MAILER_URL=null://localhost
+      - EMS_FROM_EMAIL_ADDRESS=me@theus.be
+      - EMS_FROM_EMAIL_NAME=Dev
+      - "EMSCH_ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+    volumes:
+      - ../configs/skeleton:/opt/configs
+#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-template.rule=Host(`demo-template.localhost`)"
+      - "traefik.http.routers.demo-template.entrypoints=web"
+      - "traefik.http.routers.demo-template-dev.rule=Host(`demo-template-dev.localhost`)"
+      - "traefik.http.routers.demo-template-dev.entrypoints=web"
+      - "traefik.http.routers.demo-preview.rule=Host(`demo-preview.localhost`)"
+      - "traefik.http.routers.demo-preview.entrypoints=web"
+      - "traefik.http.routers.demo-preview-dev.rule=Host(`demo-preview-dev.localhost`)"
+      - "traefik.http.routers.demo-preview-dev.entrypoints=web"
+      - "traefik.http.routers.demo-live.rule=Host(`demo-live.localhost`)"
+      - "traefik.http.routers.demo-live.entrypoints=web"
+      - "traefik.http.routers.demo-live-dev.rule=Host(`demo-live-dev.localhost`)"
+      - "traefik.http.routers.demo-live-dev.entrypoints=web"
 
 volumes:
   data01:

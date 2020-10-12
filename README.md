@@ -81,11 +81,27 @@ You should see something like:
 Note that you can also check cluster's health from the command line: ```docker-compose exec es01 curl http://localhost:9200/_cluster/health```
 
 If the Kibana url is not working you should check that its route has been correctly registered in [Traefik](http://localhost:8888/dashboard/#/http/routers). On that page you should see those host rules:
+- whoami.localhost
 - kibana.localhost
 - tika.localhost
 - minio.localhost
 - es.localhost
 - demo-admin.localhost
+- demo-admin-dev.localhost
+- demo-pgsql-admin.localhost
+- demo-pgsql-admin-dev.localhost
+- demo-mysql-admin.localhost
+- demo-mysql-admin-dev.localhost
+- demo-sqlite-admin.localhost
+- demo-sqlite-admin-dev.localhost
+- mailhog.localhost
+- demo-live.localhost
+- demo-preview.localhost
+- demo-template.localhost
+- demo-live-dev.localhost
+- demo-preview-dev.localhost
+- demo-template-dev.localhost
+
 
 ###Initiate databases
 Here we will just initiate the database and the user. The database schema will be initiated later with the Symfony console. 
@@ -157,6 +173,12 @@ You can create as many Dotenv files as you want in those folders. Per folder a v
  It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have being named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
  Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
 
+###Hidden commands
+There are 2 hide commands (not listed by Symfony) in the elasticms images:
+- ``docker-compose exec ems_pgsql demo sql`` which command directly opens the Postgres or MariaDB client
+- ``docker-compose exec ems_pgsql demo dump`` which command displays in the standard output an SQL dump
+ 
+
 ##Create a user
 Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --super-admin`` and answer to the questions. You are now able to login [elasticms](http://demo-admin.localhost).
 
@@ -180,15 +202,35 @@ docker-compose exec ems_pgsql demo ems:environment:list
 docker-compose exec ems_pgsql demo ems:environment:rebuild preview
 docker-compose exec ems_pgsql demo ems:environment:rebuild template
 docker-compose exec ems_pgsql demo ems:environment:rebuild live
+#Uploads the demo site frontend app archive
+docker-compose exec ems_pgsql demo ems:asset:extract /opt/samples bundle.zip 
 ```
 
+The demo website is available:
+- [Preview environment](http://demo-preview.localhost/)
+- [Live environment](http://demo-live.localhost/)
+- [Template environment](http://demo-template.localhost/)
+
+
+Use the following commands to update the dump:
+- ```docker-compose exec ems_pgsql bash```
+- ```demo dump > /opt/samples/demo.sql```
+
 ##Developments
+###Debug elasticms bundles
+You can mount local bundles directly in elasticms and skeleton by adding this kind of mount in the docker-compose.yaml file:
+```yaml
+      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+```
+In this example we are assuming that all your git projects are locate into the same folder.
+
 
 ###Debug emails
 You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
 ##To dos
 - Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
-- Load the skeleton skin archive
-- Skeleton
-- Explain how to work with a bundle git repository
+- Load the skeleton frontend archive with a better command
+- Script to do all tasks from scratch to the skeleton website
+- Find a way to directly take a dump
+- Support Postgres 13
