@@ -319,10 +319,11 @@ services:
       - "traefik.http.routers.demo-live-dev.entrypoints=web"
 
   varnish:
-    image: njmittet/alpine-varnish
+    image: varnish:6.2
     container_name: varnish
     volumes:
       - ../configs/varnish/default.vcl:/etc/varnish/default.vcl
+      - varnish:/var/lib/varnish
     environment:
       - PUID=1000
       - PGID=1000
@@ -346,4 +347,6 @@ volumes:
   postgres:
     driver: local
   sqlite:
+    driver: local
+  varnish:
     driver: local
