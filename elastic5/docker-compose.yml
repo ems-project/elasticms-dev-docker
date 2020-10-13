@@ -195,6 +195,9 @@ services:
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -233,6 +236,9 @@ services:
       - REDIS_PORT=6379
     volumes:
       - ../configs/ems-mysql:/opt/configs
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -270,7 +276,9 @@ services:
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
-      - ../configs/temp/sqlite-framework.yaml:/opt/src/config/packages/framework.yaml
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_fs.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -321,6 +329,8 @@ services:
   varnish:
     image: varnish:6.2
     container_name: varnish
+    depends_on:
+      - skeleton
     volumes:
       - ../configs/varnish/default.vcl:/etc/varnish/default.vcl
       - varnish:/var/lib/varnish
