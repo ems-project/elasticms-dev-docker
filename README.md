@@ -167,7 +167,7 @@ There is currently no support for other RDBMS, but if the RDBMS considered is cu
 To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts. In order to access to the Symfony console we will execute a bash in the elasticms processes with the following command:
 ```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```.
 
-    Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```.
+Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```.
 
 Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scripts on its own.  
 
@@ -247,6 +247,19 @@ The demo website is available:
 Use the following commands to update the dump:
 - ```docker-compose exec ems_pgsql bash```
 - ```demo dump > /opt/samples/demo.sql```
+
+
+### Schema in postgres
+If you want to load a Postgres dump which does not use public as schema, you can rename the public schema. In this example we will rename the public schema in  schema_myapp_adm.
+
+Enter in the demo's Postgres console with this command: ``docker-compose exec ems_pgsql demo sql`` 
+
+Then you can rename the schema and the set the search path this schema only:
+```postgresql
+ALTER SCHEMA public RENAME TO schema_trade4u_adm;
+ALTER USER trade4u SET search_path TO schema_trade4u_adm;
+```
+
 
 ## Developments
 
