@@ -91,8 +91,8 @@ services:
   postgres:
     container_name: postgres
     image: postgres:12
-#    ports:
-#      - "5432:5432"
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=adminpg
       - TZ=Europe/Brussels
@@ -104,8 +104,8 @@ services:
   mariadb:
     image: linuxserver/mariadb
     container_name: mariadb
-#    ports:
-#      - "3306:3306"
+    ports:
+      - "3306:3306"
     environment:
       - PUID=1000
       - PGID=1000
@@ -117,8 +117,8 @@ services:
   tika:
     image: apache/tika
     container_name: tika
-#    ports:
-#      - "9998:9998"
+    ports:
+      - "9998:9998"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tika.rule=Host(`tika.localhost`)"
@@ -129,8 +129,8 @@ services:
     container_name: minio
     volumes:
       - s3:/data
-#    ports:
-#      - 9000:9000
+    ports:
+      - 9000:9000
     environment:
       MINIO_ACCESS_KEY: accesskey
       MINIO_SECRET_KEY: secretkey
@@ -150,8 +150,8 @@ services:
   redis:
     image: centos/redis-5-centos7
     container_name: redis
-#    ports:
-#      - 6379:6379
+    ports:
+      - 6379:6379
     volumes:
       - redis:/var/lib/redis/data
 
@@ -190,9 +190,14 @@ services:
       - EMS_FROM_EMAIL_ADDRESS=ems_pgsql@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (pgsql)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -227,8 +232,13 @@ services:
       - EMS_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ../configs/ems-mysql:/opt/configs
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -261,10 +271,14 @@ services:
       - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
       - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
-      - ../configs/temp/sqlite-framework.yaml:/opt/src/config/packages/framework.yaml
+      - ../databases/assets:/var/libe/ems
+      - ../configs/patches/framework_fs.yaml:/opt/src/config/packages/framework.yaml
+#      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
     labels:
@@ -290,6 +304,8 @@ services:
       - EMS_FROM_EMAIL_ADDRESS=me@theus.be
       - EMS_FROM_EMAIL_NAME=Dev
       - "EMSCH_ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     volumes:
       - ../configs/skeleton:/opt/configs
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
@@ -310,6 +326,23 @@ services:
       - "traefik.http.routers.demo-live-dev.rule=Host(`demo-live-dev.localhost`)"
       - "traefik.http.routers.demo-live-dev.entrypoints=web"
 
+  varnish:
+    image: varnish:6.2
+    container_name: varnish
+    depends_on:
+      - skeleton
+    volumes:
+      - ../configs/varnish/default.vcl:/etc/varnish/default.vcl
+      - varnish:/var/lib/varnish
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.demo-varnish.rule=Host(`demo-varnish.localhost`)"
+      - "traefik.http.routers.demo-varnish.entrypoints=web"
+
 volumes:
   data01:
     driver: local
@@ -324,4 +357,6 @@ volumes:
   postgres:
     driver: local
   sqlite:
+    driver: local
+  varnish:
     driver: local

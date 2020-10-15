@@ -1,5 +1,13 @@
-#Development environment for elasticms
-##About this repository
+# Development environment for elasticms
+
+With this project all you need to have a working elasticms with all its stack running is a working docker-compose which supports descriptors in version 3.3. No need to install elasticsearch, Postgres nor MariaDB.  For Windows or Mac OS X users we recommend to use [Docker Desktop](https://www.docker.com/products/docker-desktop).
+
+Prior following this read me, [download a copy of this project](https://github.com/ems-project/elasticms-dev-docker/archive/main.zip) and unzip it in your projects folder. Or clone it locally: ``git clone https://github.com/ems-project/elasticms-dev-docker.git`` if you have a Git client installed.
+
+Windows users should activate the following git option in order to avoid CRLF/LF problems: ``git config --global core.autocrlf input``.
+
+## About this repository
+
 This project contains a ready to use elasticms environment for development purposes with the following stack:
 
 - elasticsearch (the heart of the solution)
@@ -13,9 +21,11 @@ This project contains a ready to use elasticms environment for development purpo
 - redis (to store and share PHP session)
 - elasticms (the ems content management application)
 - skeleton (the ems content delivery application)
+- varnish (reverse proxy)
 
 To work with the elastic stack version you want, from 5 to 7, open a console in one of the following folders:
-- elastic5
+- elastic5 (recommended)
+- elastic6
 - elastic7
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
@@ -31,10 +41,18 @@ The command ```docker-compose down``` won't delete persisted data (i.e. database
 ---
 
 #Requirements
+
 In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
-##Baby step
-###Launch docker-compose
+Ensure that the [file share is enable](https://stackoverflow.com/questions/60754297/docker-compose-failed-to-build-filesharing-has-been-cancelled) for your project folder. 
+
+Open a terminal in which you can run docker-composer. The command ``docker-compose`` should lists all docker-composer commands. 
+
+
+## Baby step
+
+### Launch docker-compose
+
 The first thing to do is to start your environment:
 
 ```docker-compose up -d```
@@ -42,6 +60,8 @@ The first thing to do is to start your environment:
 You can follow that everything is starting smoothly with:
 
 ```docker-compose logs -f```
+
+To leave the logs hit ``CTLR+C``
 
 Once it's started check all is working:
 
@@ -52,7 +72,8 @@ Check the image's versions with the following command: ```docker-compose images`
 You might have notice that there are 3 instances of the elasticms: ems_mysql, ems_pgsql and ems_sqlite. The reason is that Symfony (the PHP framework behind elasticms), for performance reasons, generates cache files specific to the DB driver used. So you can't use the same instance of elasticms with different RDBMS. 
 
 
-###Check elasticsearch cluster's health
+### Check elasticsearch cluster's health
+
 Go to the [Kibana dev console](http://kibana.localhost/app/dev_tools#/console) and check the cluster health:
 ```
 GET _cluster/health
@@ -103,10 +124,12 @@ If the Kibana url is not working you should check that its route has been correc
 - demo-template-dev.localhost
 
 
-###Initiate databases
+### Initiate databases
+
 Here we will just initiate the database and the user. The database schema will be initiated later with the Symfony console. 
  
-####Postgres
+#### Postgres
+
 To initiate a postgres DB run ```../init_pgsql.sh demo``` or you can launch those commands:
 
 ```
@@ -117,7 +140,8 @@ docker-compose exec -e PGUSER=postgres -e PGPASSWORD=adminpg -T postgres psql -c
 
 You can use the ``../drop_pgsql.sh demo`` to drop the database.
 
-####MySQL
+#### MySQL
+
 To initiate a postgres DB run ```../init_mysql.sh demo``` or you can launch those commands:
 
 ```
@@ -130,13 +154,16 @@ docker-compose exec mariadb mysql --user=root --password=mariadb -e "show databa
 ```
 You can use the ``../drop_mysql.sh demo`` to drop the database.
 
-###SQLite
+### SQLite
+
 There is nothing to do at this time. A demo.db file has been already created in the ``databases`` folder by the elasticms boot script.
 
-###Other RDBMS
+### Other RDBMS
+
 There is currently no support for other RDBMS, but if the RDBMS considered is currently [supported by doctrine](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/platforms.html) you will be able to easily generate the database schema as well. So up to you to use the database platform you want.      
 
-##Instantiate the database's schema
+## Instantiate the database's schema
+
 To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts. In order to access to the Symfony console we will execute a bash in the elasticms processes with the following command:
 ```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```.
 
@@ -146,7 +173,8 @@ Another option is to recreate the elasticms docker process: ```docker-compose up
 
 You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#Create a user). You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
 
-##About the Symfony console
+## About the Symfony console
+
 In the ``configs`` folder there are 4 folders:
 - ems-pgsql
 - ems-mysql
@@ -173,26 +201,30 @@ You can create as many Dotenv files as you want in those folders. Per folder a v
  It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have being named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
  Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
 
-###Hidden commands
+### Hidden commands
 There are 2 hide commands (not listed by Symfony) in the elasticms images:
 - ``docker-compose exec ems_pgsql demo sql`` which command directly opens the Postgres or MariaDB client
 - ``docker-compose exec ems_pgsql demo dump`` which command displays in the standard output an SQL dump
  
 
-##Create a user
+## Create a user
+
 Execute this command ``docker-compose exec ems_pgsql demo fos:user:create --super-admin`` and answer to the questions. You are now able to login [elasticms](http://demo-admin.localhost).
 
-##Create a minio demo bucket
+## Create a minio demo bucket
+
 Go to the [minio interface](http://minio.localhost/minio/login) and login with the credentials:
 - Access key: ``accesskey``
 - Secret key: ``secretkey``
 In the bottom-right corner click on the ``+`` button and select  ``Create bucket``. Name it ``demo``. 
 
-##Configure your content
+## Configure your content
+
 1. Define the publication environments
 2. Define the content types (encoding forms and mapping)
 
-##Load the demo website
+## Load the demo website
+
 ```
 #Load the sample SQL dump
 docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql
@@ -216,8 +248,10 @@ Use the following commands to update the dump:
 - ```docker-compose exec ems_pgsql bash```
 - ```demo dump > /opt/samples/demo.sql```
 
-##Developments
-###Debug elasticms bundles
+## Developments
+
+### Debug elasticms bundles
+
 You can mount local bundles directly in elasticms and skeleton by adding this kind of mount in the docker-compose.yaml file:
 ```yaml
       - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
@@ -225,12 +259,16 @@ You can mount local bundles directly in elasticms and skeleton by adding this ki
 In this example we are assuming that all your git projects are locate into the same folder.
 
 
-###Debug emails
+### Debug emails
+
 You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
-##To dos
-- Remove the sqlite hotfix framework.yaml file (add Redis support and parametrized the session handler)
+## To dos
+
+- Find a way to select the session handler (~, RDBMS or Redis)
 - Load the skeleton frontend archive with a better command
 - Script to do all tasks from scratch to the skeleton website
-- Find a way to directly take a dump
-- Support Postgres 13
+- Find a way to directly take SQL dump
+- Support Postgres 13 in elasticms and skeleton images
+- Add ESI support
+- Debug synchronize between storage services
