@@ -201,6 +201,18 @@ You can create as many Dotenv files as you want in those folders. Per folder a v
  It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have being named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
  Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
 
+If you face some memory issue when using the Symfony console you may want to increase the CLI PHP memory limit. You can do that by defining the CLI_PHP_MEMORY_LIMIT environment variable in the ``docker-compose.yml`` or in the project's Dotenv file or in the command line:
+
+```
+docker-compose exec -e CLI_PHP_MEMORY_LIMIT=1024M ems_pgsql demo
+```  
+
+Or from a terminal in the container:
+```
+export CLI_PHP_MEMORY_LIMIT=-1
+demo
+```
+
 ### Hidden commands
 There are 2 hide commands (not listed by Symfony) in the elasticms images:
 - ``docker-compose exec ems_pgsql demo sql`` which command directly opens the Postgres or MariaDB client
@@ -256,8 +268,8 @@ Enter in the demo's Postgres console with this command: ``docker-compose exec em
 
 Then you can rename the schema and the set the search path this schema only:
 ```postgresql
-ALTER SCHEMA public RENAME TO schema_trade4u_adm;
-ALTER USER trade4u SET search_path TO schema_trade4u_adm;
+ALTER SCHEMA public RENAME TO schema_myapp_adm;
+ALTER USER trade4u SET search_path TO schema_myapp_adm;
 ```
 
 

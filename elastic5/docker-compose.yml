@@ -192,6 +192,7 @@ services:
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
@@ -234,6 +235,7 @@ services:
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-mysql:/opt/configs
       - ../databases/assets:/var/libe/ems
@@ -273,6 +275,7 @@ services:
       - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
