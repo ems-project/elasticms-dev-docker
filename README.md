@@ -283,6 +283,10 @@ You can mount local bundles directly in elasticms and skeleton by adding this ki
 ```
 In this example we are assuming that all your git projects are locate into the same folder.
 
+If you work with bundle assets (such JS or CSS), be carefull to reinstall the assets with the symlink flag:
+```
+docker-compose exec ems_pgsql demo a:i --symlink 
+```
 
 ### Debug emails
 
