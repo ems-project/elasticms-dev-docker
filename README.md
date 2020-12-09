@@ -37,6 +37,8 @@ The command ```docker-compose down``` won't delete persisted data (i.e. database
 - Don't do that for elasticsearch data, they are not compatible from one version to the other
 - If something as change in a datasource consider to reindex it elasticsearch
 
+docker volume create --name=sqlite
+
 
 ---
 
@@ -240,6 +242,8 @@ In the bottom-right corner click on the ``+`` button and select  ``Create bucket
 ```
 #Load the sample SQL dump
 docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql
+#Ensure that the schema is up-to-date
+docker-compose exec ems_pgsql demo doctrine:mig:mig -y
 #List publication environments
 docker-compose exec ems_pgsql demo ems:environment:list
 #Index environments
