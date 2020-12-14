@@ -158,8 +158,8 @@ services:
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
-#    ports:
-#      - 1025:1025 # smtp server
+    ports:
+      - 1025:1025 # smtp server
 #      - 8025:8025 # web ui
     labels:
       - "traefik.enable=true"
@@ -177,7 +177,7 @@ services:
       - TZ=Europe/Brussels
       - APP_ENV=dev
       - PHP_FPM_MAX_CHILDREN=4
-      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=256
       - CONTAINER_HEAP_PERCENT=0.8
       - ELASTICSEARCH_VERSION=5.3
       - ES_ENDPOINT_URL=http://es01:9200
@@ -196,11 +196,11 @@ services:
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
-      - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
@@ -238,11 +238,11 @@ services:
       - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-mysql:/opt/configs
-      - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
@@ -279,11 +279,11 @@ services:
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
-      - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_fs.yaml:/opt/src/config/packages/framework.yaml
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
@@ -311,9 +311,11 @@ services:
       - REDIS_PORT=6379
     volumes:
       - ../configs/skeleton:/opt/configs
-#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSCommonBundle/src:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
+#      - ../../EMSSubmissionBundle/src:/opt/src/vendor/elasticms/submission-bundle
 #      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+#      - ../../website-skeleton/config:/opt/src/config
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.demo-template.rule=Host(`demo-template.localhost`)"
@@ -328,6 +330,8 @@ services:
       - "traefik.http.routers.demo-live.entrypoints=web"
       - "traefik.http.routers.demo-live-dev.rule=Host(`demo-live-dev.localhost`)"
       - "traefik.http.routers.demo-live-dev.entrypoints=web"
+      - "traefik.http.routers.forms.rule=Host(`forms.localhost`)"
+      - "traefik.http.routers.forms.entrypoints=web"
 
   varnish:
     image: varnish:6.2
@@ -354,12 +358,12 @@ volumes:
   redis:
     driver: local
   s3:
-    driver: local
+    external: true
   mariadb:
-    driver: local
+    external: true
   postgres:
-    driver: local
+    external: true
   sqlite:
-    driver: local
+    external: true
   varnish:
     driver: local
