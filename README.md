@@ -104,26 +104,19 @@ You should see something like:
 Note that you can also check cluster's health from the command line: ```docker-compose exec es01 curl http://localhost:9200/_cluster/health```
 
 If the Kibana url is not working you should check that its route has been correctly registered in [Traefik](http://localhost:8888/dashboard/#/http/routers). On that page you should see those host rules:
-- whoami.localhost
-- kibana.localhost
-- tika.localhost
-- minio.localhost
+- demo-varnish.localhost
 - es.localhost
-- demo-admin.localhost
-- demo-admin-dev.localhost
-- demo-pgsql-admin.localhost
-- demo-pgsql-admin-dev.localhost
-- demo-mysql-admin.localhost
-- demo-mysql-admin-dev.localhost
-- demo-sqlite-admin.localhost
-- demo-sqlite-admin-dev.localhost
+- forms.localhost
+- kibana.localhost
 - mailhog.localhost
-- demo-live.localhost
-- demo-preview.localhost
-- demo-template.localhost
-- demo-live-dev.localhost
-- demo-preview-dev.localhost
-- demo-template-dev.localhost
+- minio.localhost
+- whoami.localhost
+- tika.localhost
+- {[a-z0-9\\-_\\.]+\\-admin(\\-dev)?}.localhost
+- {[a-z0-9\\-_\\.]+\\-mysql-admin(\\-dev)?}.localhost
+- {[a-z0-9\\-_\\.]+\\-sqlite-admin(\\-dev)?}.localhost
+- {[a-z0-9\\-_\\.]+\\-(template|preview|staging|live)(\\-dev)?}.localhost
+
 
 
 ### Initiate databases
@@ -183,19 +176,39 @@ In the ``configs`` folder there are 4 folders:
 - ems-sqlite
 - skeleton
 
-You can create as many Dotenv files as you want in those folders. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you have to add in Traefik via the docker's label in the corresponding process definition:
+You can create as many Dotenv files as you want in those folders. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you migth have to add specific routes in Traefik via the docker's label in the corresponding process definition:
 
 ```yaml
   ems_pgsql:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
-      - "traefik.http.routers.demo-admin.entrypoints=web"
-      - "traefik.http.routers.demo-pgsql-admin.rule=Host(`demo-pgsql-admin.localhost`)"
-      - "traefik.http.routers.demo-pgsql-admin.entrypoints=web"
-      - "traefik.http.routers.demo-admin-dev.rule=Host(`demo-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-admin-dev.entrypoints=web"
+      - "traefik.http.routers.pgsql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-admin.localhost`)"
+      - "traefik.http.routers.pgsql-admins.entrypoints=web"
+      - "traefik.http.routers.test-elasticms.rule=Host(`test-elasticms.localhost`)"
+      - "traefik.http.routers.test-elasticms.entrypoints=web"
 ```
+
+You can avoid updating the docker-compose.yml file by using a host name matching one of the following rules:
+
+ - Request are send to the skeleton for host names using one of the following pattern:
+    - *-template.localhost
+    - *-template-dev.localhost
+    - *-preview.localhost
+    - *-preview-dev.localhost
+    - *-staging.localhost
+    - *-staging-dev.localhost
+    - *-live.localhost
+    - *-live-dev.localhost
+ - Request are send to the postgres elasticms for host names using one of the following pattern:
+    - *-admin.localhost
+    - *-admin-dev.localhost
+ - Request are send to the mysql elasticms for host names using one of the following pattern:
+    - *-mysql-admin.localhost
+    - *-mysql-admin-dev.localhost
+ - Request are send to the sqlite elasticms for host names using one of the following pattern:
+    - *-mysql-sqlite.localhost
+    - *-mysql-sqlite-dev.localhost
+
  When you update a Dotenv file you have to recreate the docker-compose process: ```docker-compose up -d --force-recreate ems_pgsql```.
  
  So an elasticms pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.

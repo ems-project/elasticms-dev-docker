@@ -226,14 +226,8 @@ services:
 #      - ../../elasticms/config:/opt/src/config:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
-      - "traefik.http.routers.demo-admin.entrypoints=web"
-      - "traefik.http.routers.demo-pgsql-admin.rule=Host(`demo-pgsql-admin.localhost`)"
-      - "traefik.http.routers.demo-pgsql-admin.entrypoints=web"
-      - "traefik.http.routers.demo-admin-dev.rule=Host(`demo-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-admin-dev.entrypoints=web"
-      - "traefik.http.routers.demo-pgsql-admin-dev.rule=Host(`demo-pgsql-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-pgsql-admin-dev.entrypoints=web"
+      - "traefik.http.routers.pgsql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-admin.localhost`)"
+      - "traefik.http.routers.pgsql-admins.entrypoints=web"
 
   ems_mysql:
     image: elasticms/admin
@@ -265,13 +259,13 @@ services:
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
 #      - ../../elasticms/config:/opt/src/config:ro
+#      - ../../elasticms/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
-      - "traefik.http.routers.demo-mysql-admin.entrypoints=web"
-      - "traefik.http.routers.demo-mysql-admin-dev.rule=Host(`demo-mysql-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-mysql-admin-dev.entrypoints=web"
+      - "traefik.http.routers.mysql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-mysql-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-mysql-admin.localhost`)"
+      - "traefik.http.routers.mysql-admins.entrypoints=web"
 
   ems_sqlite:
     image: elasticms/admin
@@ -306,13 +300,13 @@ services:
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
 #      - ../../elasticms/config:/opt/src/config:ro
+#      - ../../elasticms/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
-      - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
-      - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
+      - "traefik.http.routers.sqlite-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-sqlite-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-sqlite-admin.localhost`)"
+      - "traefik.http.routers.sqlite-admins.entrypoints=web"
 
   skeleton:
     image: elasticms/website-skeleton
@@ -329,30 +323,21 @@ services:
       - MAILER_URL=null://localhost
       - EMS_FROM_EMAIL_ADDRESS=me@theus.be
       - EMS_FROM_EMAIL_NAME=Dev
-      - "EMSCH_ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     volumes:
       - ../configs/skeleton:/opt/configs
-#      - ../../EMSCommonBundle/src:/opt/src/vendor/elasticms/common-bundle
+#      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
-#      - ../../EMSSubmissionBundle/src:/opt/src/vendor/elasticms/submission-bundle
+#      - ../../EMSSubmissionBundle:/opt/src/vendor/elasticms/submission-bundle
 #      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
 #      - ../../website-skeleton/config:/opt/src/config
+#      - ../../website-skeleton/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-template.rule=Host(`demo-template.localhost`)"
-      - "traefik.http.routers.demo-template.entrypoints=web"
-      - "traefik.http.routers.demo-template-dev.rule=Host(`demo-template-dev.localhost`)"
-      - "traefik.http.routers.demo-template-dev.entrypoints=web"
-      - "traefik.http.routers.demo-preview.rule=Host(`demo-preview.localhost`)"
-      - "traefik.http.routers.demo-preview.entrypoints=web"
-      - "traefik.http.routers.demo-preview-dev.rule=Host(`demo-preview-dev.localhost`)"
-      - "traefik.http.routers.demo-preview-dev.entrypoints=web"
-      - "traefik.http.routers.demo-live.rule=Host(`demo-live.localhost`)"
-      - "traefik.http.routers.demo-live.entrypoints=web"
-      - "traefik.http.routers.demo-live-dev.rule=Host(`demo-live-dev.localhost`)"
-      - "traefik.http.routers.demo-live-dev.entrypoints=web"
+      - "traefik.http.routers.skeletons.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-{environment:template|preview|staging|live}.localhost`,`{project:[a-z0-9\\-_\\.]+}-{environment:template|preview|staging|live}-dev.localhost`)"
+      - "traefik.http.routers.skeletons.entrypoints=web"
       - "traefik.http.routers.forms.rule=Host(`forms.localhost`)"
       - "traefik.http.routers.forms.entrypoints=web"
 
