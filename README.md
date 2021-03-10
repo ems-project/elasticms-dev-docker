@@ -4,7 +4,7 @@ With this project all you need to have a working elasticms with all its stack ru
 
 Prior following this read me, [download a copy of this project](https://github.com/ems-project/elasticms-dev-docker/archive/main.zip) and unzip it in your projects folder. Or clone it locally: ``git clone https://github.com/ems-project/elasticms-dev-docker.git`` if you have a Git client installed.
 
-Windows users should activate the following git option in order to avoid CRLF/LF problems: ``git config --global core.autocrlf input``.
+Windows users should activate the following git option in order to avoid CRLF/LF problems: ``git config --global core.autocrlf input``. If you intend to contribute, forks it first in your GitHub account. 
 
 ## About this repository
 
@@ -19,34 +19,64 @@ This project contains a ready to use elasticms environment for development purpo
 - Apache Tika (to extract asset's contents)
 - minio (as file storage, compatible with the AWS S3 API)
 - redis (to store and share PHP session)
-- elasticms (the ems content management application)
-- skeleton (the ems content delivery application)
+- elasticms (the ems content management application: CMA)
+- skeleton (the ems content delivery application: CDA)
 - varnish (reverse proxy)
 
 To work with the elastic stack version you want, from 5 to 7, open a console in one of the following folders:
-- elastic5 (recommended)
+- elastic5
 - elastic6
-- elastic7
+- elastic7 (recommended)
 
 If you want to switch from one version to the other execute ```docker-compose down``` before changing working directory. In order to ensure there is no conflict in processes name.
 
 ---
 **NOTE**
 
-The command ```docker-compose down``` won't delete persisted data (i.e. database's data) in Docker's volumes, nevertheless if you switch from an elastic stack version to another be aware Dockers volumes are not share between docker-compose projects. You'll have to recreate and reindex your content. You may want to mount local folders instead of Docker volumes. I.e. for Postgres you can change the line ```- postgres:/var/lib/postgresql/data``` by ``- ../databases/postgres:/var/lib/postgresql/data``. If so::
+The command ```docker-compose down``` won't delete persisted data (i.e. database's data) in Docker's volumes, nevertheless if you switch from an elastic stack version to another be aware Dockers volumes are not share between docker-compose projects. You'll have to recreate and reindex your content. You may want to mount local folders instead of Docker volumes. I.e. for Postgres you can change the line ```- postgres:/var/lib/postgresql/data``` by ``- ../databases/postgres:/var/lib/postgresql/data``. If so:
 - Don't do that for elasticsearch data, they are not compatible from one version to the other
-- If something as change in a datasource consider to reindex it elasticsearch
+- If something as change in a datasource consider to reindex it in elasticsearch (especially when you switch from one ELK version to another)
 
 
 ---
 
 #Requirements
 
-In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). It's configurable via the DockerDesktop's settings. For Windows users using WSL2 please check the [WSL2 section](#WSL2). 
 
-Ensure that the [file share is enable](https://stackoverflow.com/questions/60754297/docker-compose-failed-to-build-filesharing-has-been-cancelled) for your project folder. 
+You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
-Open a terminal in which you can run docker-composer. The command ``docker-compose`` should lists all docker-composer commands. 
+Ensure that the [file share is enable](https://stackoverflow.com/questions/60754297/docker-compose-failed-to-build-filesharing-has-been-cancelled) for your project folder. The file sharing settings doesn't apply to WSL 2 users.
+
+Open a terminal in which you can run docker-composer. The command ``docker-compose`` should lists all docker-composer commands.
+
+
+
+## WSL2
+Windows users using Docker Desktop with WSL 2 have to specify it in the [WSL config file](https://itnext.io/wsl2-tips-limit-cpu-memory-when-using-docker-c022535faf6f):
+
+```
+# turn off all wsl instances such as docker-desktop
+wsl --shutdown
+notepad "$env:USERPROFILE/.wslconfig"
+```
+
+Type in this config:
+```
+[wsl2]
+memory=4GB   # Limits VM memory in WSL 2 up to 4GB
+processors=4 # Makes the WSL 2 VM use two virtual processors
+```
+
+You must also update the kernel `vm.max_map_count` paramater. To do so open powershell:
+
+``
+wsl -d docker-desktop
+echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+echo "echo 262144 > /proc/sys/vm/max_map_count" >> /etc/rc.local
+``
+
+Then restart Docker. You'll have to redo this on each updates of the Docker-Dektop image. 
 
 
 ## Baby step
@@ -56,6 +86,8 @@ Open a terminal in which you can run docker-composer. The command ``docker-compo
 The first thing to do is to start your environment:
 
 ```docker-compose up -d```
+
+Note that this command will first download all required Docker images.
 
 You can follow that everything is starting smoothly with:
 
