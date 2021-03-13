@@ -72,11 +72,18 @@ You must also update the kernel `vm.max_map_count` paramater. To do so open powe
 
 ``
 wsl -d docker-desktop
+sysctl -w vm.max_map_count=262144
+``
+
+I still not found a way to persist that config, yet. Here are some commands to persists it, but they don't seam to work:
+
+``
+wsl -d docker-desktop
 echo "vm.max_map_count=262144" >> /etc/sysctl.conf
 echo "echo 262144 > /proc/sys/vm/max_map_count" >> /etc/rc.local
 ``
 
-Then restart Docker. You'll have to redo this on each updates of the Docker-Dektop image. 
+Even if they work, you'll have to redo this on each updates of the Docker-Dektop image. 
 
 
 ## Baby step
@@ -162,7 +169,7 @@ Here we will just initiate the database and the user. The database schema will b
  
 #### Postgres
 
-To initiate a postgres DB run ```../init_pgsql.sh demo``` or you can launch those commands:
+To initiate a postgres DB run `../init_pgsql.sh demo`` (in Windows ``..\init_pgsql.cmd demo``) or you can launch those commands:
 
 ```
 docker-compose exec -e PGUSER=postgres -e PGPASSWORD=adminpg -T postgres psql -c "CREATE DATABASE demo;"
@@ -170,11 +177,11 @@ docker-compose exec -e PGUSER=postgres -e PGPASSWORD=adminpg -T postgres psql -c
 docker-compose exec -e PGUSER=postgres -e PGPASSWORD=adminpg -T postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE demo TO demo;"
 ```
 
-You can use the ``../drop_pgsql.sh demo`` to drop the database.
+You can use the ``../drop_pgsql.sh demo`` (in Windows ``..\drop_pgsql.cmd demo``) to drop the database.
 
 #### MySQL
 
-To initiate a postgres DB run ```../init_mysql.sh demo``` or you can launch those commands:
+To initiate a postgres DB run ```../init_mysql.sh demo``` (in Windows ``..\init_mysql.cmd demo``) or you can launch those commands:
 
 ```
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE DATABASE IF NOT EXISTS demo;"
@@ -184,7 +191,7 @@ docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE USER
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "GRANT ALL PRIVILEGES ON demo.* TO demo@'localhost';"
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "show databases;"
 ```
-You can use the ``../drop_mysql.sh demo`` to drop the database.
+You can use the ``../drop_mysql.sh demo`` (in Windows ``..\drop_mysql.cmd demo``) to drop the database.
 
 ### SQLite
 
@@ -260,6 +267,7 @@ In the bottom-right corner click on the ``+`` button and select  ``Create bucket
 ```
 #Load the sample SQL dump
 docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql
+docker-compose exec ems_pgsql demo doctrine:migrations:migrate
 #List publication environments
 docker-compose exec ems_pgsql demo ems:environment:list
 #Index environments
@@ -310,7 +318,6 @@ You can check sent emails with [MailHog](http://mailhog.localhost/#).
 
 ## To dos
 
-- Find a way to select the session handler (~, RDBMS or Redis)
 - Load the skeleton frontend archive with a better command
 - Script to do all tasks from scratch to the skeleton website
 - Find a way to directly take SQL dump
