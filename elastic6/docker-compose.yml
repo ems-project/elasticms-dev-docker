@@ -1,4 +1,4 @@
-version: "3.3"
+version: "2.4"
 
 services:
 
@@ -182,21 +182,20 @@ services:
       - ELASTICSEARCH_VERSION=5.3
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
       - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_pgsql@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (pgsql)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
       - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
@@ -224,20 +223,19 @@ services:
       - ELASTICSEARCH_VERSION=5.6
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=mysql
       - DB_HOST=mariadb
       - DB_PORT=3306
       - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_mysql@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-mysql:/opt/configs
       - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_redis.yaml:/opt/src/config/packages/framework.yaml
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
@@ -261,23 +259,22 @@ services:
       - ELASTICSEARCH_VERSION=5.6
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=sqlite
       - "DB_HOST=127.0.0.1"
       - "DB_PORT="
       - "DB_USER="
       - "DB_PASSWORD=\"\""
       - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
       - ../databases/assets:/var/libe/ems
-      - ../configs/patches/framework_fs.yaml:/opt/src/config/packages/framework.yaml
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
@@ -301,11 +298,9 @@ services:
       - CONTAINER_HEAP_PERCENT=0.8
       - ES_ENDPOINT_URL=http://es501:9200
       - MAILER_URL=null://localhost
-      - EMS_FROM_EMAIL_ADDRESS=me@theus.be
-      - EMS_FROM_EMAIL_NAME=Dev
-      - "EMSCH_ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
       - ../configs/skeleton:/opt/configs
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
