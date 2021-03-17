@@ -68,23 +68,12 @@ memory=4GB   # Limits VM memory in WSL 2 up to 4GB
 processors=4 # Makes the WSL 2 VM use two virtual processors
 ```
 
-You must also update the kernel `vm.max_map_count` paramater. To do so open powershell:
+In this project, elasticsearch has been configured to [not allow  memory mapping](https://www.elastic.co/guide/en/cloud-on-k8s/master/k8s-virtual-memory.html). You may want to reactivate this option, for that you have to first increase the `max_map_count` system's parameter:
 
 ``
 wsl -d docker-desktop
 sysctl -w vm.max_map_count=262144
 ``
-
-I still not found a way to persist that config, yet. Here are some commands to persists it, but they don't seam to work:
-
-``
-wsl -d docker-desktop
-echo "vm.max_map_count=262144" >> /etc/sysctl.conf
-echo "echo 262144 > /proc/sys/vm/max_map_count" >> /etc/rc.local
-``
-
-Even if they work, you'll have to redo this on each updates of the Docker-Dektop image. 
-
 
 ## Baby step
 

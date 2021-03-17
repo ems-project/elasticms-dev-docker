@@ -1,0 +1,6 @@
+network:
+  host: 0.0.0.0
+
+node:
+  store:
+    allow_mmap: false

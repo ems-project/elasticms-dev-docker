@@ -44,6 +44,7 @@ services:
       - 9200:9200
     volumes:
       - data01:/usr/share/elasticsearch/data
+      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -66,6 +67,7 @@ services:
         hard: -1
     volumes:
       - data02:/usr/share/elasticsearch/data
+      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -88,6 +90,7 @@ services:
         hard: -1
     volumes:
       - data03:/usr/share/elasticsearch/data
+      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
