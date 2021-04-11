@@ -79,9 +79,9 @@ sysctl -w vm.max_map_count=262144
 
 ### Launch docker-compose
 
-In order to allow Traefik to be used by other service (i.e. by your skeleton docker-compose project), this config requires a named docker network:
+In order to allow Traefik (the reverse proxy) to be reused by other service (i.e. by your skeleton docker-compose project), this config requires a named docker network:
 
-```docker network create traefik```
+```docker network create proxy```
 
 
 

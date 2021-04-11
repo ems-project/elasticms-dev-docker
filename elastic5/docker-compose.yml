@@ -359,4 +359,4 @@ volumes:
 networks:
   default:
     external:
-      name: traefik
+      name: proxy
