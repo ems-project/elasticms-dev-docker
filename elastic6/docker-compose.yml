@@ -203,7 +203,7 @@ services:
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
-      - ../databases/assets:/var/libe/ems
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
@@ -239,7 +239,7 @@ services:
       - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-mysql:/opt/configs
-      - ../databases/assets:/var/libe/ems
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
@@ -280,7 +280,7 @@ services:
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
-      - ../databases/assets:/var/libe/ems
+      - ../databases/assets:/var/lib/ems
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
