@@ -35,6 +35,7 @@ services:
       - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -44,7 +45,6 @@ services:
       - 9200:9200
     volumes:
       - data01:/usr/share/elasticsearch/data
-      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -60,6 +60,7 @@ services:
       - discovery.seed_hosts=es01,es03
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -67,7 +68,6 @@ services:
         hard: -1
     volumes:
       - data02:/usr/share/elasticsearch/data
-      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
@@ -83,6 +83,7 @@ services:
       - discovery.seed_hosts=es01,es02
       - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -90,11 +91,11 @@ services:
         hard: -1
     volumes:
       - data03:/usr/share/elasticsearch/data
-      - ../configs/elasticsearch/elasticsearch-7.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
       - "traefik.http.routers.es.entrypoints=web"
+
       - "traefik.http.routers.es.service=es"
       - "traefik.http.services.es.loadbalancer.server.port=9200"
 
