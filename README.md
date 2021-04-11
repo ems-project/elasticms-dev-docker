@@ -79,6 +79,12 @@ sysctl -w vm.max_map_count=262144
 
 ### Launch docker-compose
 
+In order to allow Traefik to be used by other service (i.e. by your skeleton docker-compose project), this config requires a named docker network:
+
+```docker network create traefik```
+
+
+
 The first thing to do is to start your environment:
 
 ```docker-compose up -d```

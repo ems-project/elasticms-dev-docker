@@ -355,3 +355,8 @@ volumes:
     driver: local
   varnish:
     driver: local
+
+networks:
+  default:
+    external:
+      name: traefik
