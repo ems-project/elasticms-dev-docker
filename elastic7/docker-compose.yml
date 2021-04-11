@@ -11,8 +11,10 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
+      - "443:443"
       - "8888:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -25,6 +27,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
       - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami-tls.tls=true"
+      - "traefik.http.routers.whoami-tls.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami-tls.entrypoints=websecure"
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
