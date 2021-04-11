@@ -163,8 +163,8 @@ services:
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
-#    ports:
-#      - 1025:1025 # smtp server
+    ports:
+      - 1025:1025 # smtp server
 #      - 8025:8025 # web ui
     labels:
       - "traefik.enable=true"
@@ -182,7 +182,7 @@ services:
       - TZ=Europe/Brussels
       - APP_ENV=dev
       - PHP_FPM_MAX_CHILDREN=4
-      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
+      - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=256
       - CONTAINER_HEAP_PERCENT=0.8
       - ELASTICSEARCH_VERSION=5.3
       - ES_ENDPOINT_URL=http://es01:9200
@@ -197,6 +197,7 @@ services:
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
+      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
@@ -204,16 +205,11 @@ services:
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-admin.rule=Host(`demo-admin.localhost`)"
-      - "traefik.http.routers.demo-admin.entrypoints=web"
-      - "traefik.http.routers.demo-pgsql-admin.rule=Host(`demo-pgsql-admin.localhost`)"
-      - "traefik.http.routers.demo-pgsql-admin.entrypoints=web"
-      - "traefik.http.routers.demo-admin-dev.rule=Host(`demo-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-admin-dev.entrypoints=web"
-      - "traefik.http.routers.demo-pgsql-admin-dev.rule=Host(`demo-pgsql-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-pgsql-admin-dev.entrypoints=web"
+      - "traefik.http.routers.pgsql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-admin.localhost`)"
+      - "traefik.http.routers.pgsql-admins.entrypoints=web"
 
   ems_mysql:
     image: elasticms/admin
@@ -234,6 +230,7 @@ services:
       - MAILER_URL=smtp://mailhog:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLI_PHP_MEMORY_LIMIT=512M
       - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
@@ -244,12 +241,13 @@ services:
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
+#      - ../../elasticms/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-mysql-admin.rule=Host(`demo-mysql-admin.localhost`)"
-      - "traefik.http.routers.demo-mysql-admin.entrypoints=web"
-      - "traefik.http.routers.demo-mysql-admin-dev.rule=Host(`demo-mysql-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-mysql-admin-dev.entrypoints=web"
+      - "traefik.http.routers.mysql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-mysql-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-mysql-admin.localhost`)"
+      - "traefik.http.routers.mysql-admins.entrypoints=web"
 
   ems_sqlite:
     image: elasticms/admin
@@ -276,6 +274,7 @@ services:
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
+      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
@@ -283,12 +282,13 @@ services:
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+#      - ../../elasticms/config:/opt/src/config:ro
+#      - ../../elasticms/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-sqlite-admin.rule=Host(`demo-sqlite-admin.localhost`)"
-      - "traefik.http.routers.demo-sqlite-admin.entrypoints=web"
-      - "traefik.http.routers.demo-sqlite-admin-dev.rule=Host(`demo-sqlite-admin-dev.localhost`)"
-      - "traefik.http.routers.demo-sqlite-admin-dev.entrypoints=web"
+      - "traefik.http.routers.sqlite-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-sqlite-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-sqlite-admin.localhost`)"
+      - "traefik.http.routers.sqlite-admins.entrypoints=web"
 
   skeleton:
     image: elasticms/website-skeleton
@@ -310,21 +310,16 @@ services:
       - ../configs/skeleton:/opt/configs
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
+#      - ../../EMSSubmissionBundle:/opt/src/vendor/elasticms/submission-bundle
 #      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+#      - ../../website-skeleton/config:/opt/src/config
+#      - ../../website-skeleton/vendor:/opt/src/vendor
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.demo-template.rule=Host(`demo-template.localhost`)"
-      - "traefik.http.routers.demo-template.entrypoints=web"
-      - "traefik.http.routers.demo-template-dev.rule=Host(`demo-template-dev.localhost`)"
-      - "traefik.http.routers.demo-template-dev.entrypoints=web"
-      - "traefik.http.routers.demo-preview.rule=Host(`demo-preview.localhost`)"
-      - "traefik.http.routers.demo-preview.entrypoints=web"
-      - "traefik.http.routers.demo-preview-dev.rule=Host(`demo-preview-dev.localhost`)"
-      - "traefik.http.routers.demo-preview-dev.entrypoints=web"
-      - "traefik.http.routers.demo-live.rule=Host(`demo-live.localhost`)"
-      - "traefik.http.routers.demo-live.entrypoints=web"
-      - "traefik.http.routers.demo-live-dev.rule=Host(`demo-live-dev.localhost`)"
-      - "traefik.http.routers.demo-live-dev.entrypoints=web"
+      - "traefik.http.routers.skeletons.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-{environment:template|preview|staging|live}.localhost`,`{project:[a-z0-9\\-_\\.]+}-{environment:template|preview|staging|live}-dev.localhost`)"
+      - "traefik.http.routers.skeletons.entrypoints=web"
+      - "traefik.http.routers.forms.rule=Host(`forms.localhost`)"
+      - "traefik.http.routers.forms.entrypoints=web"
 
   varnish:
     image: varnish:6.2
@@ -351,13 +346,13 @@ volumes:
   redis:
     driver: local
   s3:
-    driver: local
+    external: true
   mariadb:
-    driver: local
+    external: true
   postgres:
-    driver: local
+    external: true
   sqlite:
-    driver: local
+    external: true
   varnish:
     driver: local
 
