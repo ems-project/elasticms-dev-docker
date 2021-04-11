@@ -68,7 +68,7 @@ memory=4GB   # Limits VM memory in WSL 2 up to 4GB
 processors=4 # Makes the WSL 2 VM use two virtual processors
 ```
 
-In this project, elasticsearch has been configured to [not allow  memory mapping](https://www.elastic.co/guide/en/cloud-on-k8s/master/k8s-virtual-memory.html). You may want to reactivate this option, for that you have to first increase the `max_map_count` system's parameter:
+In this project, elasticsearch 6 and 7 have been configured to [not allow  memory mapping](https://www.elastic.co/guide/en/cloud-on-k8s/master/k8s-virtual-memory.html). If you want to use elasticsearch 7, or if you may want to reactivate this option, you have to first increase the `max_map_count` system's parameter:
 
 ``
 wsl -d docker-desktop
