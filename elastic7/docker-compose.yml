@@ -100,7 +100,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.es.rule=Host(`es.localhost`)"
       - "traefik.http.routers.es.entrypoints=web"
-
       - "traefik.http.routers.es.service=es"
       - "traefik.http.services.es.loadbalancer.server.port=9200"
 
@@ -198,6 +197,10 @@ services:
       - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
       - "traefik.http.routers.mailhog.service=mailhog"
       - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.routers.mailhog-tls.rule=Host(`mailhog.localhost`)"
+      - "traefik.http.routers.mailhog-tls.service=mailhog"
+      - "traefik.http.routers.mailhog-tls.entrypoints=websecure"
+      - "traefik.http.routers.mailhog-tls.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
 
   ems_pgsql:
