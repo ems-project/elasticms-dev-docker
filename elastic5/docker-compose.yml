@@ -4,7 +4,7 @@ services:
 
   traefik:
     image: "traefik:v2.2"
-    container_name: "traefik"
+    container_name: "traefik_ems"
     command:
       #- "--log.level=DEBUG"
       - "--api.insecure=true"
@@ -16,6 +16,9 @@ services:
       - "80:80"
       - "443:443"
       - "8888:8080"
+    networks:
+      - default
+      - skeleton
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -162,7 +165,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
+    container_name: mailhog_ems
     ports:
       - 1025:1025 # smtp server
 #      - 8025:8025 # web ui
@@ -171,6 +174,10 @@ services:
       - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
       - "traefik.http.routers.mailhog.service=mailhog"
       - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.routers.mailhog-tls.rule=Host(`mailhog.localhost`)"
+      - "traefik.http.routers.mailhog-tls.service=mailhog"
+      - "traefik.http.routers.mailhog-tls.entrypoints=websecure"
+      - "traefik.http.routers.mailhog-tls.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
 
   ems_pgsql:
@@ -190,7 +197,7 @@ services:
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
-      - MAILER_URL=smtp://mailhog:1025
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
@@ -227,7 +234,7 @@ services:
       - DB_DRIVER=mysql
       - DB_HOST=mariadb
       - DB_PORT=3306
-      - MAILER_URL=smtp://mailhog:1025
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - CLI_PHP_MEMORY_LIMIT=512M
@@ -267,14 +274,14 @@ services:
       - "DB_PORT="
       - "DB_USER="
       - "DB_PASSWORD=\"\""
-      - MAILER_URL=smtp://mailhog:1025
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLI_PHP_MEMORY_LIMIT=512M
       - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
-      - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
@@ -360,3 +367,5 @@ networks:
   default:
     external:
       name: proxy
+  skeleton:
+    external: true
