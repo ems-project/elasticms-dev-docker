@@ -4,7 +4,7 @@ With this project all you need to have a working elasticms with all its stack ru
 
 Prior following this read me, [download a copy of this project](https://github.com/ems-project/elasticms-dev-docker/archive/main.zip) and unzip it in your projects folder. Or clone it locally: ``git clone https://github.com/ems-project/elasticms-dev-docker.git`` if you have a Git client installed.
 
-Windows users should activate the following git option in order to avoid CRLF/LF problems: ``git config --global core.autocrlf input``. If you intend to contribute, forks it first in your GitHub account. 
+Windows users should activate the following git option in order to avoid CRLF/LF problems: ``git config --global core.autocrlf input``. If you intend to contribute, fork it first in your GitHub account. 
 
 ## About this repository
 
@@ -33,9 +33,9 @@ If you want to switch from one version to the other execute ```docker-compose do
 ---
 **NOTE**
 
-The command ```docker-compose down``` won't delete persisted data (i.e. database's data) in Docker's volumes, nevertheless if you switch from an elastic stack version to another be aware Dockers volumes are not share between docker-compose projects. You'll have to recreate and reindex your content. You may want to mount local folders instead of Docker volumes. I.e. for Postgres you can change the line ```- postgres:/var/lib/postgresql/data``` by ``- ../databases/postgres:/var/lib/postgresql/data``. If so:
+The command ```docker-compose down``` won't delete persisted data (i.e. database's data) in Docker's volumes, nevertheless if you switch from an elastic stack version to another be aware Docker volumes are not shared between docker-compose projects. You'll have to recreate and re-index your content. You might want to mount local folders instead of Docker volumes. I.e. for Postgres you can change the line ```- postgres:/var/lib/postgresql/data``` by ``- ../databases/postgres:/var/lib/postgresql/data``. If so:
 - Don't do that for elasticsearch data, they are not compatible from one version to the other
-- If something as change in a datasource consider to reindex it in elasticsearch (especially when you switch from one ELK version to another)
+- If something has changed in a datasource, consider to re-index it in elasticsearch (especially when you switch from one ELK version to another)
 
 docker volume create --name=sqlite
 
@@ -93,13 +93,13 @@ The first thing to do is to start your environment:
 
 Note that this command will first download all required Docker images.
 
-You can follow that everything is starting smoothly with:
+You can check that everything is starting smoothly with:
 
 ```docker-compose logs -f```
 
 To leave the logs hit ``CTLR+C``
 
-Once it's started check all is working:
+Once it's started check that all is working:
 
 ```docker-compose ps```
 
@@ -196,11 +196,12 @@ There is currently no support for other RDBMS, but if the RDBMS considered is cu
 To initialize an elasticms schema we will use the Symfony console to execute the doctrine migration scripts. In order to access to the Symfony console we will execute a bash in the elasticms processes with the following command:
 ```docker-compose exec ems_pgsql bash```, ```docker-compose exec ems_mysql bash``` or ```docker-compose exec ems_sqlite bash```.
 
-Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```.
+Once there, you can call the Demo's Symfony console : ```demo```. This will list all available elasticms's commands. To run the migration scripts: ```demo doctrine:migrations:migrate```. <-- there is actually no migrations at this stage
 
 Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scripts on its own.  
 
-You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#Create a user). You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
+You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#create-a-user). <-- why do we jump here ?
+You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
 
 ## About the Symfony console
 
@@ -210,7 +211,7 @@ In the ``configs`` folder there are 4 folders:
 - ems-sqlite
 - skeleton
 
-You can create as many Dotenv files as you want in those folders. Per folder a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined you migth have to add specific routes in Traefik via the docker's label in the corresponding process definition:
+You can create as many Dotenv files as you want in those folders. Per folder, a virtual host will be setup for the domains specified by the variables ``SERVER_NAME`` and ``SERVER_ALIASES``. For each domain you defined, you migth have to add specific routes in Traefik in the ``docker-compose.yml`` label in the corresponding process definition:
 
 ```yaml
   ems_pgsql:
@@ -245,9 +246,9 @@ You can avoid updating the docker-compose.yml file by using a host name matching
 
  When you update a Dotenv file you have to recreate the docker-compose process: ```docker-compose up -d --force-recreate ems_pgsql```.
  
- So an elasticms pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.
+ So, an elasticms pgsql docker-compose process can be used by as many ems projects as you want. Until they are all using a Postgres database in this case.
  
- It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have being named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
+ It's also important to interact with those projects via the Symfony console, not only via urls. To do so, the elasticms docker's image creates one shell scripts per Dotenv files within the elasticms's docker process in the ``/opt/bin`` folder. Those scripts have been named from the basename of the corresponding Dotenv file: ``demo.env`` => ```/opt/bin/demo```. 
  Then, you can call the Symfony console ```/opt/bin/demo``` from a bash inside the docker process ```docker-compose exec ems_pgsql bash```. Or directly from your host: ```docker-compose exec ems_pgsql /opt/bin/demo```. Finally, as the folder ``/opt/bin`` is in the path, ``docker-compose exec ems_pgsql demo`` usually works.
 
 If you face some memory issue when using the Symfony console you may want to increase the CLI PHP memory limit. You can do that by defining the CLI_PHP_MEMORY_LIMIT environment variable in the ``docker-compose.yml`` or in the project's Dotenv file or in the command line:
@@ -263,9 +264,9 @@ demo
 ```
 
 ### Hidden commands
-There are 2 hide commands (not listed by Symfony) in the elasticms images:
-- ``docker-compose exec ems_pgsql demo sql`` which command directly opens the Postgres or MariaDB client
-- ``docker-compose exec ems_pgsql demo dump`` which command displays in the standard output an SQL dump
+There are 2 hidden commands (not listed by Symfony) in the elasticms images:
+- ``docker-compose exec ems_pgsql demo sql`` opens the Postgres or MariaDB client.
+- ``docker-compose exec ems_pgsql demo dump`` displays an SQL dump in the standard output.
  
 
 ## Create a user
@@ -283,12 +284,13 @@ In the bottom-right corner click on the ``+`` button and select  ``Create bucket
 
 1. Define the publication environments
 2. Define the content types (encoding forms and mapping)
+<- We might need an example here
 
 ## Load the demo website
 
 ```
 #Load the sample SQL dump
-docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql
+docker-compose exec ems_pgsql demo sql --file=/opt/samples/demo.sql <- It's not there
 #Ensure that the schema is up-to-date
 docker-compose exec ems_pgsql demo doctrine:migrations:migrate -y
 #List publication environments
