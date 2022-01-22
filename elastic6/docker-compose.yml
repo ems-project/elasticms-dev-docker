@@ -199,6 +199,9 @@ services:
           - demo-pgsql-admin.localhost
           - demo-pgsql-admin-dev.localhost
       default:
+        aliases:
+          - demo-pgsql-admin.localhost
+          - demo-pgsql-admin-dev.localhost
     environment:
       - PUID=1000
       - PGID=1000
@@ -340,7 +343,7 @@ services:
       - 'TRUSTED_PROXIES=127.0.0.1,REMOTE_ADDR'
       - 'TRUSTED_HOSTS=localhost,*.localhost'
       - 'EMSCH_ASSET_LOCAL_FOLDER=skeleton'
-      - 'BACKEND_URL=http://demo-pgsql-admin-dev.localhost'
+      - 'BACKEND_URL=http://demo-pgsql-admin-dev.localhost:9000'
     volumes:
       - ../configs/skeleton:/opt/configs
       - ../dist:/opt/src/public/skeleton:ro
