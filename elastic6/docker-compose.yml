@@ -17,8 +17,12 @@ services:
       - "443:443"
       - "8888:8080"
     networks:
-      - default
-      - skeleton
+      skeleton:
+        aliases:
+          - traefik
+      default:
+        aliases:
+          - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -189,6 +193,12 @@ services:
   ems_pgsql:
     image: elasticms/admin
     container_name: ems_pgsql
+    networks:
+      skeleton:
+        aliases:
+          - demo-pgsql-admin.localhost
+          - demo-pgsql-admin-dev.localhost
+      default:
     environment:
       - PUID=1000
       - PGID=1000
@@ -326,8 +336,16 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - 'ENVIRONMENT_ALIAS_BASE_PATH=../'
+      - 'TRUSTED_PROXIES=127.0.0.1,REMOTE_ADDR'
+      - 'TRUSTED_HOSTS=localhost,*.localhost'
+      - 'EMSCH_ASSET_LOCAL_FOLDER=skeleton'
+      - 'BACKEND_URL=http://demo-pgsql-admin-dev.localhost'
     volumes:
       - ../configs/skeleton:/opt/configs
+      - ../dist:/opt/src/public/skeleton:ro
+      - ../skeleton:/opt/src/local/demo_pgsql_v1_preview
+      - ../skeleton:/opt/src/local/demo_pgsql_v1_live
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
 #      - ../../EMSSubmissionBundle:/opt/src/vendor/elasticms/submission-bundle
