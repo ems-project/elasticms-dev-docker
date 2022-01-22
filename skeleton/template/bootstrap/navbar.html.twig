@@ -45,7 +45,7 @@
 <a class="skip-main" href="#main-content">{{ 'aria.skip-to-main-content'|trans }}</a>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" href="{{ path("emsch_target_#{targetGroup}.#{locale}") }}" id="logo">
-        <img src="{{ asset("bundles/emsch_assets/img/logo-#{locale}.png") }}" width="30" height="30" class="d-inline-block align-top" alt="{{ 'site.name'|trans }}">
+        <img src="{{ asset("img/logo-#{locale}.png", 'emsch') }}" width="30" height="30" class="d-inline-block align-top" alt="{{ 'site.name'|trans }}">
         {{ 'site.name'|trans }} 
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsHeader" aria-controls="navbarsHeader" aria-expanded="false" aria-label="{{ 'action.toggle-navigation'|trans }}">

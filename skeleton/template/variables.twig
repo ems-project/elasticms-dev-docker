@@ -131,10 +131,10 @@
     {% set targetGroup =  app.request.get('_target_group', targetConfigs|keys|first) %}
     {% set targetConfig = attribute(targetConfigs, targetGroup) %}
     {% set wyiwygReplaces = wyiwygReplacesDefault|merge(targetConfig.wyiwygReplaces) %}
-    {% set siteHashAssets = 'site.assets'|trans %}
+    {% set siteHashAssets = '895259f58188ad3b952450727a0ccb1c684ae6fc' %}
     {% set environment = app.request.get('_environment', 'live') %}
     {% set language = targetConfig.locales|filter(v => v == app.request.locale)|keys|first  %}
-    {{ emsch_assets(siteHashAssets) }}
+    {% set assetPath = emsch_assets_version(siteHashAssets) %}
     
     {%- block request %}{% endblock request -%}
 

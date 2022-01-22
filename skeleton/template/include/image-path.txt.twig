@@ -1,10 +1,10 @@
 {% spaceless %}
     {% set pictureConfig = {
         _file_names: [
-            './bundles/'~trans_default_domain~'/img/ct-'~search_type|default(false)~'.png',
-            './bundles/'~trans_default_domain~'/img/blank.png',
+            assetPath~'/img/ct-'~search_type|default('blank')~'.png',
+            assetPath  ~'/img/blank.png',
         ],
-        _quality: 0,
+        _image_format: 'webp',
         _config_type: 'image',
         _width: width|default('*'),
         _height: height|default('*'),
@@ -17,7 +17,7 @@
         filename: 'ct-'~search_type|default("blank")~'.png',
         _filename: 'ct-'~search_type|default("blank")~'.png',
     } %}
-    
+
     {% if attribute(picture, 'picture_asset') is defined %}
         {% if 'zip' in picture.picture_asset.mimetype|default('not') %}
             {% set directory = './bundles/' ~ picture.picture_asset.sha1 %}
@@ -64,6 +64,6 @@
     {% if watermark|default(false) %}
         {% set pictureConfig = pictureConfig|merge({_watermark_hash: watermark}) %}
     {% endif %}
-    
+
     {{ ems_asset_path(hashInfo, pictureConfig) }}
 {% endspaceless %}

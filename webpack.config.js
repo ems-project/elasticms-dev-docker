@@ -22,7 +22,7 @@ module.exports = {
     ],
     context: path.resolve(__dirname, './'),
     entry: {
-        'app': './src/app.js',
+        'index': './src/index.js',
         'admin': './src/admin.js',
     },
     output: {

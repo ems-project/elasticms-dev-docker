@@ -41,7 +41,7 @@
         <description>{{ "rss.#{targetGroup}.description"|trans }}</description>
         <language>{{ app.request.locale }}</language>
         <link>{{ host  }}{{ path("emsch_target_#{targetGroup}") }}</link>
-        <image>{{ host  }}{{ asset('bundles/emsch_assets/img/full-logo-' ~ app.request.locale ~ '.png') }}?{{ siteHashAssets }}</image>
+        <image>{{ host  }}{{ asset('img/full-logo-' ~ app.request.locale ~ '.png', 'emsch') }}</image>
         {% for newsItem in newsItems %}
             <item>
                 <title>{{ attribute(newsItem._source, "title_#{locale}") }}</title>

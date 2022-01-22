@@ -130,14 +130,14 @@
 <html lang="{{ app.request.locale|e('html_attr') }}" 
     data-trans-default-domain="{{ trans_default_domain|e('html_attr') }}" 
     data-environment="{{ environment|e('html_attr') }}" 
-    data-asset-path="{{ asset('bundles/emsch_assets/')|e('html_attr') }}">
+    data-asset-path="{{ asset('', 'emsch')|e('html_attr') }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="{% block description %}{{ 'site.tagline'|trans }}{% endblock %}">
     <meta name="author" content="{% block author %}{{ 'site.author'|trans }}{% endblock %}">
-    <link rel="icon" href="{{ asset('bundles/emsch_assets/img/favicon.ico') }}?{{ siteHashAssets }}">
-    <link rel="apple-touch-icon" href="{{ asset('bundles/emsch_assets/img/apple-touch-icon.png') }}?{{ siteHashAssets }}">
+    <link rel="icon" href="{{ asset('img/favicon.ico', 'emsch') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/apple-touch-icon.png', 'emsch') }}">
 
     <title>{{ block('title_tag') }}</title>
     
@@ -178,8 +178,8 @@
             <link rel="alternate" hreflang="{{ lr.locale }}" href="{{ lr.route }}">
         {% endfor %}
     {% endblock %}
-        
-    <link media="screen" href="{{ asset('bundles/emsch_assets/css/index.css') }}?{{ siteHashAssets }}" rel="stylesheet">
+
+    <link media="screen" href="{{ asset('css/index.css', 'emsch') }}" rel="stylesheet">
     {{ include('@EMSCH/template/assets/styles.html.twig') }}
   </head>
 
@@ -194,9 +194,9 @@
     
 
 
-    <script src="https://wcmtech-cdn-preview.prd.ext.socialsecurity.be/{{ app.request.locale }}/{{ cdnSiteId|default('AXFeSTO72GwxbXw0Kcwf') }}/app.js"></script> 
+    <script src="https://cdn.gcloud.belgium.be/{{ app.request.locale }}/{{ cdnSiteId|default('AXFeSTO72GwxbXw0Kcwf') }}/app.js"></script>
     {#<script src="https://cdn.ehealthplatform.info/{{ app.request.locale }}/{{ cdnSiteId|default('AXFeSTO72GwxbXw0Kcwf') }}/app.js?v=1"></script>#}
-    <script src="{{ asset('bundles/emsch_assets/js/index.js') }}?{{ siteHashAssets }}"></script>
+    <script src="{{ asset('js/index.js', 'emsch') }}"></script>
     {% if app.environment == 'dev' %}
         {{ include('@EMSCH/template/debug/dump.html.twig') }}
     {% endif %}
