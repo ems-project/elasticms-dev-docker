@@ -1,0 +1,207 @@
+{% extends '@EMSCH/template/variables.twig' %}
+{% trans_default_domain trans_default_domain %}
+
+{% set targetGroup = app.request.get('_target_group')|default(false) %}
+{% if not targetGroup %}
+    {% set targetGroup = 'site' %}
+{% endif %}
+
+
+{% set targets = emsch_search('target', {
+    "_source": ["slugs", "menu_ids", "target_group", "locales", "title"],
+    "size": 20
+}).hits.hits|default([]) %}
+    
+{% set byTarget = {} %}
+{% for target in targets %}
+    {% set slugByUid = {} %}
+    {% set uidBySlug = {} %}
+    {% for slug in target._source.slugs|default([]) %}
+        {% if target._source.menu_ids[loop.index0]|default(false) %}
+            {% set uidBySlug = uidBySlug|merge({ (slug): (target._source.menu_ids[loop.index0]) }) %}
+            {% set slugByUid = slugByUid|merge({ (target._source.menu_ids[loop.index0]): (slug) }) %}
+        {% endif %}
+    {% endfor %}
+    {% set tempLocale = attribute(byTarget, target._source.locales|default('-'))|default([])|merge({ (target._source.target_group|default('-')) : {
+            slugByUid: slugByUid,
+            uidBySlug: uidBySlug,
+            title: target._source.title|default('Home')
+        } }) %}
+    {% set byTarget = byTarget|merge({ (target._source.locales|default('-')) : tempLocale }) %}
+{% endfor %}
+
+
+{% set currentTarget = emsch_search('target', {
+    "query": {
+        "bool": {
+            "must": [
+                { "term": {  "target_group": {  "value": targetGroup } } },
+                { "term": { "locales": { "value": app.request.locale } } }
+            ]
+        }
+    }
+}).hits.hits.0._source|default({}) %}
+
+
+{% set taxonomies = {} %}
+{% for taxonomy in emsch_search('taxonomy', {
+            _source: ["title_#{app.request.locale}", "type"],
+            size: 100,
+            query: {
+                term: {
+                    target_group: targetGroup
+                },
+            },
+            sort: [{ 'order': { 'order': 'asc' } }]
+        }).hits.hits|default([]) %}
+        
+       {% set taxonomies = taxonomies|merge({ (taxonomy._id): taxonomy._source }) %} 
+{% endfor %}
+
+{% block title_tag -%}
+    {%- if 'live' != environment -%}
+        {{ environment|upper ~ ': ' }}
+    {%- endif -%}
+    {% block title %}{{ 'site.tagline'|trans }}{% endblock title %} | {{ 'site.name'|trans -}}
+{%- endblock title_tag %}
+
+{% block request -%}
+    {% set routeName = app.request.get('_route') %}
+    {% set languageRoutes = [] %}
+    {% for language, l in targetConfig.locales|filter(v => (v != locale and (attribute(source, 'show_'~v) is defined ? attribute(source, 'show_'~v) == true : true) )) %}
+    
+        {% set host = '//' ~ targetConfig.hostPattern|replace({ ('%locale%') : l, ('%environment%'): environment }) %}
+        
+        {% if targetConfig.isLive and 'live' == environment  %}
+            {% set host = '//' ~ attribute(targetConfig.canonicals, l)  %}
+        {% endif %}
+        
+        {% if host == app.request.host %}
+            {% set host = '' %}
+        {% endif %}
+        
+        {% set route = '' %}
+        {% if attribute(source, '_contenttype')|default(false) == 'page' %}
+        
+            {% set params = { 'slug': attribute(source, 'slug_'~l), '_locale': l } %}
+            {% set route = path('emsch_page', params) %}
+            
+            {% for menuId in attribute(source, 'menu_'~l)|default([]) %}
+                {% if attribute(attribute(attribute(byTarget, l), targetGroup).slugByUid, menuId)|default(false)  %}
+                    {% set lSlug =attribute(attribute(attribute(byTarget, l), targetGroup).slugByUid, menuId) %}
+                    {% if lSlug == '/' %}
+                        {% set route = path('emsch_target_'~targetGroup, params|merge({'slug': null, '_locale': l})) %}
+                    {% else %}
+                        {% set route = path('emsch_target_'~targetGroup, params|merge({'slug': lSlug, '_locale': l})) %}
+                    {% endif %}
+                    
+                {% endif %}
+            {% endfor %}
+        
+        {% elseif (routeName != '' and routeName[-3:3] == '.'~locale) %} {# translated route (path is array) #}
+            {% set params = app.request.get('_route_params') %}
+            {% if not attribute(params, "slug")|default(false) %}
+                {% set route = path(routeName[0:-3], params|merge({ _locale : l })) %}
+            {% elseif attribute(source, "slug_#{l}")|default(false)  %}
+                {% set route = path(routeName[0:-3], params|merge({ ("slug") : attribute(source, "slug_#{l}"), _locale : l })) %}
+            {% elseif attribute(source, "slug")|default(false)  %}
+                {% set route = path(routeName[0:-3], params|merge({ ("slug") : attribute(source, "slug"), _locale : l })) %}
+            {% else %}
+                {% set route = path("emsch_target_#{targetGroup}.#{l}") %}
+            {% endif %}
+        {% elseif (routeName != '') %} 
+            {% set params = app.request.get('_route_params') %}
+            {# {% if host == app.request.host %}
+                {% set params = params|merge({'_locale': l}) %}
+            {% endif %} #}
+            {% set route = path(routeName, params) %}
+        {% endif %}
+        
+        {% set languageRoutes = languageRoutes|merge([{
+            'language': language, 
+            'locale': l,
+            'route': host ~ route|default('#')
+        }]) %}
+        
+    {% endfor %}
+
+{%- block subrequest -%}
+<!doctype html>
+<html lang="{{ app.request.locale|e('html_attr') }}" 
+    data-trans-default-domain="{{ trans_default_domain|e('html_attr') }}" 
+    data-environment="{{ environment|e('html_attr') }}" 
+    data-asset-path="{{ asset('bundles/emsch_assets/')|e('html_attr') }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="{% block description %}{{ 'site.tagline'|trans }}{% endblock %}">
+    <meta name="author" content="{% block author %}{{ 'site.author'|trans }}{% endblock %}">
+    <link rel="icon" href="{{ asset('bundles/emsch_assets/img/favicon.ico') }}?{{ siteHashAssets }}">
+    <link rel="apple-touch-icon" href="{{ asset('bundles/emsch_assets/img/apple-touch-icon.png') }}?{{ siteHashAssets }}">
+
+    <title>{{ block('title_tag') }}</title>
+    
+    {% block canonical %}
+
+        {%- set canonical = false -%}
+        
+        {% if not canonical and source._contenttype|default('_not_a_ct') in ['page'] %}
+            {%- for uid in source|locale_attr('menu_')|default([]) -%}
+                {%- if not canonical -%}
+                    {% for t in targetConfigs|keys %}
+                        {% set slug = attribute(attribute(attribute(byTarget, locale), t).slugByUid, uid)|default(false) %}
+                        {% if slug %}
+                            {% set canonical = path("emsch_target_#{t}.#{locale}", {slug: slug == '/' ? null : slug}) %}  
+                        {% endif %}
+                    {% endfor %}  
+                {%- endif -%}
+            {%- endfor -%}
+            {%- if not canonical and source|locale_attr('slug_') -%}
+                {% set slug = source|locale_attr('slug_') %}
+                {%- for t in source.target_group|default([]) -%}
+                    {%- if not canonical -%}
+                        {% set canonical = path("emsch_target_#{t}.#{locale}", {slug: slug == '/' ? null : slug}) %}  
+                    {%- endif -%}
+                {%- endfor -%}
+            {%- endif -%}
+        {% endif %}
+            
+        {% if not canonical and app.request.get('_route') %}
+            {%- set canonical = path(app.request.get('_route'), app.request.get('_route_params'))  -%}
+        {% endif %}
+        
+        {% if canonical %}
+            <link rel="canonical" href="//{{ attribute(targetConfig.canonicals, locale) }}{% block canonicalUrl %}{{ canonical }}{% endblock %}">
+        {% endif %}
+    
+        {% for lr in languageRoutes %}
+            <link rel="alternate" hreflang="{{ lr.locale }}" href="{{ lr.route }}">
+        {% endfor %}
+    {% endblock %}
+        
+    <link media="screen" href="{{ asset('bundles/emsch_assets/css/index.css') }}?{{ siteHashAssets }}" rel="stylesheet">
+    {{ include('@EMSCH/template/assets/styles.html.twig') }}
+  </head>
+
+  <body>
+    {% block navbar %}{{ include('@EMSCH/template/bootstrap/navbar.html.twig') }}{% endblock %}
+    
+    {% block body %}<main role="main" id="main-content"></main>{% endblock %}
+    
+    
+    {% block footer %}{{ include('@EMSCH/template/bootstrap/footer.html.twig') }}{% endblock %}
+    
+    
+
+
+    <script src="https://wcmtech-cdn-preview.prd.ext.socialsecurity.be/{{ app.request.locale }}/{{ cdnSiteId|default('AXFeSTO72GwxbXw0Kcwf') }}/app.js"></script> 
+    {#<script src="https://cdn.ehealthplatform.info/{{ app.request.locale }}/{{ cdnSiteId|default('AXFeSTO72GwxbXw0Kcwf') }}/app.js?v=1"></script>#}
+    <script src="{{ asset('bundles/emsch_assets/js/index.js') }}?{{ siteHashAssets }}"></script>
+    {% if app.environment == 'dev' %}
+        {{ include('@EMSCH/template/debug/dump.html.twig') }}
+    {% endif %}
+    {{ include('@EMSCH/template/assets/javascript.html.twig') }}
+  </body>
+</html>
+{%- endblock subrequest -%}
+{%- endblock request -%}
