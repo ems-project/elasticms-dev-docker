@@ -1,19 +1,24 @@
-version: "3.3"
+version: "2.4"
 
 services:
 
   traefik:
     image: "traefik:v2.2"
-    container_name: "traefik"
+    container_name: "traefik_ems"
     command:
       #- "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
       - "80:80"
+      - "443:443"
       - "8888:8080"
+    networks:
+      - default
+      - skeleton
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -25,6 +30,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
       - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami-tls.tls=true"
+      - "traefik.http.routers.whoami-tls.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami-tls.entrypoints=websecure"
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.8.12
@@ -34,6 +42,7 @@ services:
       - cluster.name=es6-docker-cluster
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -57,6 +66,7 @@ services:
       - cluster.name=es6-docker-cluster
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
+      - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=es01"
     ulimits:
@@ -157,7 +167,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
+    container_name: mailhog_ems
     ports:
       - 1025:1025 # smtp server
 #      - 8025:8025 # web ui
@@ -166,6 +176,10 @@ services:
       - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
       - "traefik.http.routers.mailhog.service=mailhog"
       - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.routers.mailhog-tls.rule=Host(`mailhog.localhost`)"
+      - "traefik.http.routers.mailhog-tls.service=mailhog"
+      - "traefik.http.routers.mailhog-tls.entrypoints=websecure"
+      - "traefik.http.routers.mailhog-tls.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
 
   ems_pgsql:
@@ -182,16 +196,16 @@ services:
       - ELASTICSEARCH_VERSION=5.3
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
-      - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_pgsql@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (pgsql)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
       - CLI_PHP_MEMORY_LIMIT=512M
     volumes:
       - ../configs/ems-pgsql:/opt/configs
@@ -219,17 +233,17 @@ services:
       - ELASTICSEARCH_VERSION=5.6
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=mysql
       - DB_HOST=mariadb
       - DB_PORT=3306
-      - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_mysql@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (mysql)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - CLI_PHP_MEMORY_LIMIT=512M
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-mysql:/opt/configs
       - ../databases/assets:/var/lib/ems
@@ -257,19 +271,19 @@ services:
       - ELASTICSEARCH_VERSION=5.6
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
-      - TIKA_SERVER=http://tika:9998
       - DB_DRIVER=sqlite
       - "DB_HOST=127.0.0.1"
       - "DB_PORT="
       - "DB_USER="
       - "DB_PASSWORD=\"\""
-      - MAILER_URL=smtp://mailhog:1025
-      - EMS_FROM_EMAIL_ADDRESS=ems_sqlite@example.com
-      - "EMS_FROM_EMAIL_NAME=elasticms (sqlite)"
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - CLI_PHP_MEMORY_LIMIT=512M
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
+      - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
+      - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
+      - EMSCO_TIKA_SERVER=http://tika:9998
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
@@ -298,11 +312,9 @@ services:
       - CONTAINER_HEAP_PERCENT=0.8
       - ES_ENDPOINT_URL=http://es501:9200
       - MAILER_URL=null://localhost
-      - EMS_FROM_EMAIL_ADDRESS=me@theus.be
-      - EMS_FROM_EMAIL_NAME=Dev
-      - "ELASTICSEARCH_CLUSTER=[\"http://es01:9200\",\"http://es02:9200\"]"
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - "EMS_ELASTICSEARCH_HOSTS=[\"http://es01:9200\",\"http://es02:9200\"]"
     volumes:
       - ../configs/skeleton:/opt/configs
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
@@ -352,3 +364,10 @@ volumes:
     external: true
   varnish:
     driver: local
+
+networks:
+  default:
+    external:
+      name: proxy
+  skeleton:
+    external: true
