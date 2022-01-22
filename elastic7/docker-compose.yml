@@ -17,13 +17,8 @@ services:
       - "443:443"
       - "8888:8080"
     networks:
-      skeleton:
-        aliases:
-          - onem-pgsql-admin.localhost
-          - traefik
-      default:
-        aliases:
-          - traefik
+      - default
+      - skeleton
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
