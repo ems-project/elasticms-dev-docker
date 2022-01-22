@@ -48,14 +48,15 @@
                 <div class="row justify-content-center">
                     <div class="col-md-12">
                         {% if newsItems|length > 0 %}
-                            {% set lastPage = (newsSearch.hits.total / pagingSize)|round(0, 'ceil') -1 %}
+                            {%  set total = newsSearch.hits.total.value|default(newsSearch.hits.total) %}
+                            {% set lastPage = (total / pagingSize)|round(0, 'ceil') -1 %}
                             {% include '@EMSCH/template/include/pagination.html.twig' with {
                                 anchor: "news-result",
                                 searchRoute: app.request.get('_route'),
                                 currentFilters: app.request.query,
                                 currentPage: page,
                                 pageParameter: 'p',
-                                extremePagesLimit: 3, 
+                                extremePagesLimit: 3,
                                 nearbyPagesLimit: 3,
                                 lastPage: lastPage > 1000 ? 1000 : lastPage,
                             }  %}
@@ -64,7 +65,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
             </div>
          </div>
     </main>
