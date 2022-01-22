@@ -17,8 +17,13 @@ services:
       - "443:443"
       - "8888:8080"
     networks:
-      - default
-      - skeleton
+      skeleton:
+        aliases:
+          - onem-pgsql-admin.localhost
+          - traefik
+      default:
+        aliases:
+          - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -42,6 +47,7 @@ services:
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
       - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -49,6 +55,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - default
+      - skeleton
     ports:
       - 9200:9200
     volumes:
@@ -67,6 +76,7 @@ services:
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es03
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
       - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -90,6 +100,7 @@ services:
       - cluster.name=es7-docker-cluster
       - discovery.seed_hosts=es01,es02
       - cluster.initial_master_nodes=es01,es02,es03
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - bootstrap.memory_lock=true
       - node.store.allow_mmap=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -134,6 +145,7 @@ services:
       - PGID=1000
     volumes:
       - postgres:/var/lib/postgresql/data
+      - ../configs/samples:/opt/samples
 
   mariadb:
     image: linuxserver/mariadb
@@ -168,7 +180,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: accesskey
       MINIO_SECRET_KEY: secretkey
-    command: server /data
+    command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -179,7 +191,7 @@ services:
       - "traefik.http.routers.minio.rule=Host(`minio.localhost`)"
       - "traefik.http.routers.minio.service=minio"
       - "traefik.http.routers.minio.entrypoints=web"
-      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.services.minio.loadbalancer.server.port=9001"
 
   redis:
     image: centos/redis-5-centos7
@@ -235,10 +247,17 @@ services:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
       - ../databases/assets:/var/lib/ems
+#      - ../ems-setup.sh:/opt/bin/container-entrypoint.d/ems-setup.sh
 #      - ../../EMSMakerBundle:/opt/src/vendor/elasticms/maker-bundle
+#      - ../../elasticms/vendor:/opt/src/vendor
 #      - ../../EMSCommonBundle:/opt/src/vendor/elasticms/common-bundle
 #      - ../../EMSCoreBundle:/opt/src/vendor/elasticms/core-bundle
+#      - ../../EMSCoreBundle/src/Resources/translations:/opt/src/translations
+#      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
+#      - ../../EMSFormBundle:/opt/src/vendor/elasticms/form-bundle
+#      - ../../EMSSubmissionBundle:/opt/src/vendor/elasticms/submission-bundle
 #      - ../../elasticms/config:/opt/src/config:ro
+#      - ../configs/samples/ems-setup.sh:/opt/bin/container-entrypoint.d/ems-setup.sh:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pgsql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-admin.localhost`)"
@@ -254,7 +273,6 @@ services:
       - PHP_FPM_MAX_CHILDREN=4
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=1024
       - CONTAINER_HEAP_PERCENT=0.8
-      - ELASTICSEARCH_VERSION=5.6
       - ES_ENDPOINT_URL=http://es01:9200
       - TIKA_ENDPOINT_URL=http://tika:9998
       - DB_DRIVER=mysql
@@ -277,6 +295,7 @@ services:
 #      - ../../EMSClientHelperBundle:/opt/src/vendor/elasticms/client-helper-bundle
 #      - ../../elasticms/config:/opt/src/config:ro
 #      - ../../elasticms/vendor:/opt/src/vendor
+#      - ../../EMSCoreBundle/src/Resources/translations:/opt/src/translations
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mysql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-mysql-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-mysql-admin.localhost`)"
@@ -297,8 +316,8 @@ services:
       - TIKA_ENDPOINT_URL=http://tika:9998
       - DB_DRIVER=sqlite
       - "DB_HOST=127.0.0.1"
-      - "DB_PORT="
-      - "DB_USER="
+      - "DB_PORT=''"
+      - "DB_USER=''"
       - "DB_PASSWORD=\"\""
       - MAILER_URL=smtp://mailhog_ems:1025
       - REDIS_HOST=redis
