@@ -172,7 +172,7 @@ You can use the ``../drop_pgsql.sh demo`` (in Windows ``..\drop_pgsql.cmd demo``
 
 #### MySQL
 
-To initiate a MySQL DB run ```../init_mysql.sh demo``` or you can launch those commands:
+To initiate a MySQL DB run ```../init_mysql.sh demo```  (in Windows ``..\init_mysql.cmd demo``) or you can launch those commands:
 
 ```
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE DATABASE IF NOT EXISTS demo;"
