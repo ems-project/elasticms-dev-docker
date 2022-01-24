@@ -148,6 +148,10 @@ export default function ajaxSearch(submitOnKeyStroke = false) {
     };
 
     window.onpopstate = function(event) {
+        if (null === pushData) {
+            return;
+        }
+
         $('[aria-live]').each(function() {
             const id = $(this).attr('id');
             if (id && pushData.arias[id]) {

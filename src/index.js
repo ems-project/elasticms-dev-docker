@@ -4,6 +4,7 @@ window.$ = $;
 window.jQuery = $;
 
 import './css/bootstrap.scss';
+require('bootstrap');
 
 import adminMenu from '@elasticms/admin-menu';
 import back2top from "./js/back2top";
