@@ -44,7 +44,8 @@ docker volume create --name=sqlite
 
 #Requirements
 
-In order to have a working elasticsearch cluster you must have at least [4GB dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). It's configurable via the DockerDesktop's settings. For Windows users using WSL2 please check the [WSL2 section](#WSL2). 
+In order to have a working elasticsearch cluster you must have at least [4GB of RAM dedicated to you docker environment](https://github.com/elastic/elasticsearch/issues/51196). You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
+
 
 You might also want to check those [production recommendations](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites).
 
@@ -110,7 +111,7 @@ You might have notice that there are 3 instances of the elasticms: ems_mysql, em
 
 ### Check elasticsearch cluster's health
 
-Go to the [Kibana dev console](http://kibana.localhost/app/dev_tools#/console) and check the cluster health:
+Go to the [Kibana dev console](http://kibana.localhost/app/kibana#/dev_tools/console) and check the cluster health:
 ```
 GET _cluster/health
 ```
@@ -171,7 +172,7 @@ You can use the ``../drop_pgsql.sh demo`` (in Windows ``..\drop_pgsql.cmd demo``
 
 #### MySQL
 
-To initiate a postgres DB run ```../init_mysql.sh demo``` (in Windows ``..\init_mysql.cmd demo``) or you can launch those commands:
+To initiate a MySQL DB run ```../init_mysql.sh demo```  (in Windows ``..\init_mysql.cmd demo``) or you can launch those commands:
 
 ```
 docker-compose exec mariadb mysql --user=root --password=mariadb -e "CREATE DATABASE IF NOT EXISTS demo;"
@@ -200,8 +201,7 @@ Once there, you can call the Demo's Symfony console : ```demo```. This will list
 
 Another option is to recreate the elasticms docker process: ```docker-compose up -d --force-recreate ems_pgsql```, as the elasticms docker image starting script is executing the doctrine migration scripts on its own.  
 
-You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#create-a-user). <-- why do we jump here ?
-You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
+You should now be able to show the elasticms [login window](http://demo-admin.localhost). For that you need to [create an admin account](#create-a-user). You can see that everything looks good by checking the [elasticms status page](http://demo-admin.localhost/status).
 
 ## About the Symfony console
 
