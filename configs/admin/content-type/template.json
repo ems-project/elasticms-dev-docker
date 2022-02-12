@@ -2,16 +2,6 @@
     "class": "EMS\\CoreBundle\\Entity\\ContentType",
     "arguments": [],
     "properties": {
-        "created": {
-            "date": "2019-04-05 13:39:26.000000",
-            "timezone_type": 3,
-            "timezone": "Europe/Brussels"
-        },
-        "modified": {
-            "date": "2022-02-12 08:36:21.000000",
-            "timezone_type": 3,
-            "timezone": "Europe/Brussels"
-        },
         "name": "template",
         "pluralName": "Templates",
         "singularName": "Template",
@@ -34,16 +24,6 @@
                 "__initializer__": null,
                 "__cloner__": null,
                 "__isInitialized__": true,
-                "created": {
-                    "date": "2019-04-05 13:39:29.000000",
-                    "timezone_type": 3,
-                    "timezone": "Europe/Brussels"
-                },
-                "modified": {
-                    "date": "2022-02-12 08:36:21.000000",
-                    "timezone_type": 3,
-                    "timezone": "Europe/Brussels"
-                },
                 "type": "EMS\\CoreBundle\\Form\\DataField\\ContainerFieldType",
                 "name": "source",
                 "contentType": null,
@@ -72,16 +52,6 @@
                         "class": "EMS\\CoreBundle\\Entity\\FieldType",
                         "arguments": [],
                         "properties": {
-                            "created": {
-                                "date": "2019-04-05 13:39:29.000000",
-                                "timezone_type": 3,
-                                "timezone": "Europe/Brussels"
-                            },
-                            "modified": {
-                                "date": "2022-02-12 08:36:21.000000",
-                                "timezone_type": 3,
-                                "timezone": "Europe/Brussels"
-                            },
                             "type": "EMS\\CoreBundle\\Form\\DataField\\TextStringFieldType",
                             "name": "name",
                             "contentType": null,
@@ -127,16 +97,6 @@
                         "class": "EMS\\CoreBundle\\Entity\\FieldType",
                         "arguments": [],
                         "properties": {
-                            "created": {
-                                "date": "2019-04-05 13:39:29.000000",
-                                "timezone_type": 3,
-                                "timezone": "Europe/Brussels"
-                            },
-                            "modified": {
-                                "date": "2022-02-12 08:36:21.000000",
-                                "timezone_type": 3,
-                                "timezone": "Europe/Brussels"
-                            },
                             "type": "EMS\\CoreBundle\\Form\\DataField\\CodeFieldType",
                             "name": "body",
                             "contentType": null,
