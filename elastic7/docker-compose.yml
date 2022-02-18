@@ -379,6 +379,7 @@ services:
       - 'BACKEND_URL=http://demo-pgsql-admin-dev.localhost:9000'
     volumes:
       - ../configs/skeleton:/opt/configs
+      - ../configs/admin:/opt/src/admin
       - ../dist:/opt/src/public/skeleton:ro
       - ../skeleton:/opt/src/local/demo_pgsql_v1_preview
       - ../skeleton:/opt/src/local/demo_pgsql_v1_live
