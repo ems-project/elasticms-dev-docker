@@ -251,6 +251,7 @@ services:
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
       - CLI_PHP_MEMORY_LIMIT=512M
+      - JOBS_ENABLED=true
     volumes:
       - ../configs/ems-pgsql:/opt/configs
       - ../configs/samples:/opt/samples
@@ -270,6 +271,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.pgsql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-admin.localhost`)"
       - "traefik.http.routers.pgsql-admins.entrypoints=web"
+      - "traefik.http.services.ems_pgsql.loadbalancer.server.port=9000"
 
   ems_mysql:
     image: elasticms/admin
@@ -294,6 +296,7 @@ services:
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
+      - JOBS_ENABLED=true
     volumes:
       - ../configs/ems-mysql:/opt/configs
       - ../databases/assets:/var/lib/ems
@@ -308,6 +311,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.mysql-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-mysql-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-mysql-admin.localhost`)"
       - "traefik.http.routers.mysql-admins.entrypoints=web"
+      - "traefik.http.services.ems_mysql.loadbalancer.server.port=9000"
 
   ems_sqlite:
     image: elasticms/admin
@@ -335,6 +339,7 @@ services:
       - EMSCO_FROM_EMAIL_ADDRESS=ems_mysql@example.com
       - "EMSCO_FROM_EMAIL_NAME=elasticms (mysql)"
       - EMSCO_TIKA_SERVER=http://tika:9998
+      - JOBS_ENABLED=true
     volumes:
       - ../configs/ems-sqlite:/opt/configs
       - ../databases:/opt/sqlite
@@ -349,6 +354,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sqlite-admins.rule=HostRegexp(`{project:[a-z0-9\\-_\\.]+}-sqlite-admin-dev.localhost`,`{project:[a-z0-9\\-_\\.]+}-sqlite-admin.localhost`)"
       - "traefik.http.routers.sqlite-admins.entrypoints=web"
+      - "traefik.http.services.ems_mysql.loadbalancer.server.port=9000"
 
   skeleton:
     image: elasticms/website-skeleton
@@ -388,6 +394,7 @@ services:
       - "traefik.http.routers.skeletons.entrypoints=web"
       - "traefik.http.routers.forms.rule=Host(`forms.localhost`)"
       - "traefik.http.routers.forms.entrypoints=web"
+      - "traefik.http.services.skeleton.loadbalancer.server.port=9000"
 
   varnish:
     image: varnish:6.2
