@@ -30,3 +30,10 @@ echo "Create/Update Schedules"
 
 echo "Create/Update WYSIWYG Style Sets"
 ../demo-preview.sh ems:admin:update wysiwyg-style-set DemoStyleSet
+
+echo "Create/Update WYSIWYG Profiles"
+../demo-preview.sh ems:admin:update wysiwyg-profile Full
+../demo-preview.sh ems:admin:update wysiwyg-profile Light
+../demo-preview.sh ems:admin:update wysiwyg-profile Sample
+../demo-preview.sh ems:admin:update wysiwyg-profile Standard
+
