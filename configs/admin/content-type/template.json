@@ -166,7 +166,7 @@
         "deleteRole": null,
         "trashRole": "ROLE_ADMIN",
         "ownerRole": null,
-        "orderKey": 5,
+        "orderKey": 6,
         "rootContentType": false,
         "editTwigWithWysiwyg": true,
         "webContent": false,
