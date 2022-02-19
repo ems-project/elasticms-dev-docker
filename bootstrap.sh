@@ -1,4 +1,7 @@
 #/bin/bash
+echo "Upload assets"
+../demo-preview.sh emsch:local:folder-upload -- /opt/src/admin/assets
+
 echo "Create/Update Filters"
 ../demo-preview.sh ems:admin:update filter dutch_stemmer
 ../demo-preview.sh ems:admin:update filter dutch_stop
@@ -24,3 +27,6 @@ echo "Create/Update Schedules"
 ../demo-preview.sh ems:admin:update schedule check-aliases
 ../demo-preview.sh ems:admin:update schedule clear-logs
 ../demo-preview.sh ems:admin:update schedule publish-releases
+
+echo "Create/Update WYSIWYG Style Sets"
+../demo-preview.sh ems:admin:update wysiwyg-style-set DemoStyleSet
