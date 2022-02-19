@@ -9,9 +9,10 @@
         "managed": true,
         "snapshot": false,
         "circles": [],
-        "inDefaultSearch": null,
+        "inDefaultSearch": true,
         "extra": null,
         "orderKey": 1,
         "updateReferrers": false
-    }
+    },
+    "replaced": []
 }

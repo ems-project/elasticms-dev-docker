@@ -37,3 +37,22 @@ echo "Create/Update WYSIWYG Profiles"
 ../demo-preview.sh ems:admin:update wysiwyg-profile Sample
 ../demo-preview.sh ems:admin:update wysiwyg-profile Standard
 
+echo "Create/Update i18n"
+../demo-preview.sh ems:admin:update i18n config
+../demo-preview.sh ems:admin:update i18n ems.documentation.body
+
+echo "Create/Update Environments"
+../demo-preview.sh ems:admin:update environment preview
+../demo-preview.sh ems:admin:update environment live
+
+echo "Create/Update ContentTypes"
+../demo-preview.sh ems:admin:update content-type label
+../demo-preview.sh ems:admin:update content-type route
+../demo-preview.sh ems:admin:update content-type template
+
+echo "Create/Update QuerySearches"
+../demo-preview.sh ems:admin:update query-search pages
+
+echo "Create/Update Dashboards"
+../demo-preview.sh ems:admin:update dashboard welcome
+

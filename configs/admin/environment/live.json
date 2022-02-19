@@ -4,14 +4,15 @@
     "properties": {
         "name": "live",
         "label": "Live",
-        "color": "aqua",
+        "color": "green",
         "baseUrl": null,
         "managed": true,
         "snapshot": false,
         "circles": [],
-        "inDefaultSearch": null,
+        "inDefaultSearch": false,
         "extra": null,
         "orderKey": 2,
         "updateReferrers": false
-    }
+    },
+    "replaced": []
 }
