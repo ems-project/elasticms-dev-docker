@@ -19,3 +19,8 @@ echo "Create/Update Analyzers"
 ../demo-preview.sh ems:admin:update analyzer french_for_highlighting
 ../demo-preview.sh ems:admin:update analyzer german_for_highlighting
 ../demo-preview.sh ems:admin:update analyzer html_strip
+
+echo "Create/Update Schedules"
+../demo-preview.sh ems:admin:update schedule check-aliases
+../demo-preview.sh ems:admin:update schedule clear-logs
+../demo-preview.sh ems:admin:update schedule publish-releases
