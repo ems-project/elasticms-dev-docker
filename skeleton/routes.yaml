@@ -40,6 +40,7 @@ emsch_publication_test_site:
 emsch_slideshow:
     config:
         path: { en: 'slideshow/{slug}', fr: 'presentation/{slug}' }
+    query: '{"query":{"bool":{"must":[{"term":{"%locale%.show":true}},{"term":{"%locale%.slug":"%slug%"}},{"terms":{"_contenttype":["slideshow"]}}]}},"size":1}'
     template_static: template/slideshow/revealjs.html.twig
 emsch_search_site:
     config:
