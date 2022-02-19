@@ -1,0 +1,175 @@
+{
+    "class": "EMS\\CoreBundle\\Entity\\ContentType",
+    "arguments": [],
+    "properties": {
+        "name": "slideshow",
+        "pluralName": "Slideshows",
+        "singularName": "Slideshow",
+        "icon": "fa fa-slideshare",
+        "description": null,
+        "indexTwig": null,
+        "extra": null,
+        "lockBy": null,
+        "lockUntil": null,
+        "circlesField": "",
+        "businessIdField": "",
+        "deleted": false,
+        "askForOuuid": false,
+        "dirty": false,
+        "color": "aqua",
+        "fieldType": {
+            "class": "EMS\\CoreBundle\\Entity\\FieldType",
+            "arguments": [],
+            "properties": {
+                "__initializer__": null,
+                "__cloner__": null,
+                "__isInitialized__": true,
+                "type": "EMS\\CoreBundle\\Form\\DataField\\ContainerFieldType",
+                "name": "source",
+                "contentType": null,
+                "deleted": false,
+                "description": null,
+                "options": {
+                    "displayOptions": {
+                        "label": null,
+                        "class": null,
+                        "lastOfRow": false,
+                        "helptext": null,
+                        "icon": null
+                    },
+                    "restrictionOptions": {
+                        "minimum_role": null
+                    },
+                    "extraOptions": {
+                        "extra": null,
+                        "clear_on_copy": false,
+                        "postProcessing": null
+                    }
+                },
+                "orderKey": 0,
+                "parent": null,
+                "children": [
+                    {
+                        "class": "EMS\\CoreBundle\\Entity\\FieldType",
+                        "arguments": [],
+                        "properties": {
+                            "type": "EMS\\CoreBundle\\Form\\DataField\\TextStringFieldType",
+                            "name": "label",
+                            "contentType": null,
+                            "deleted": false,
+                            "description": null,
+                            "options": {
+                                "displayOptions": {
+                                    "label": "Label",
+                                    "class": "col-md-8",
+                                    "lastOfRow": true,
+                                    "helptext": "Use to identify this slideshow in elasticms",
+                                    "prefixIcon": null,
+                                    "prefixText": null,
+                                    "suffixIcon": null,
+                                    "suffixText": null,
+                                    "placeholder": null,
+                                    "icon": null
+                                },
+                                "mappingOptions": {
+                                    "index": null,
+                                    "analyzer": null,
+                                    "copy_to": "live_search"
+                                },
+                                "restrictionOptions": {
+                                    "mandatory": true,
+                                    "mandatory_if": null,
+                                    "minimum_role": null
+                                },
+                                "extraOptions": {
+                                    "extra": null,
+                                    "clear_on_copy": false,
+                                    "postProcessing": null
+                                },
+                                "raw_data": [],
+                                "migrationOptions": {
+                                    "protected": false
+                                }
+                            },
+                            "orderKey": 0,
+                            "parent": null,
+                            "children": [
+                                {
+                                    "class": "EMS\\CoreBundle\\Entity\\FieldType",
+                                    "arguments": [],
+                                    "properties": {
+                                        "type": "EMS\\CoreBundle\\Form\\DataField\\SubfieldType",
+                                        "name": "alpha_order",
+                                        "contentType": null,
+                                        "deleted": false,
+                                        "description": null,
+                                        "options": {
+                                            "displayOptions": [],
+                                            "mappingOptions": {
+                                                "index": "analyzed",
+                                                "analyzer": "alpha_order",
+                                                "fielddata": true
+                                            },
+                                            "extraOptions": {
+                                                "extra": null,
+                                                "clear_on_copy": false,
+                                                "postProcessing": null
+                                            }
+                                        },
+                                        "orderKey": 0,
+                                        "parent": null,
+                                        "children": []
+                                    },
+                                    "replaced": []
+                                }
+                            ]
+                        },
+                        "replaced": []
+                    }
+                ]
+            },
+            "replaced": []
+        },
+        "labelField": "",
+        "colorField": "",
+        "userField": null,
+        "dateField": null,
+        "startDateField": null,
+        "endDateField": null,
+        "locationField": null,
+        "refererFieldName": null,
+        "categoryField": "",
+        "ouuidField": null,
+        "imageField": "",
+        "videoField": null,
+        "emailField": "",
+        "assetField": "",
+        "orderField": null,
+        "sortBy": "",
+        "sortOrder": null,
+        "createRole": "ROLE_AUTHOR",
+        "editRole": "ROLE_AUTHOR",
+        "viewRole": "ROLE_AUTHOR",
+        "publishRole": "ROLE_PUBLISHER",
+        "deleteRole": "ROLE_WEBMASTER",
+        "trashRole": "ROLE_ADMIN",
+        "ownerRole": "not-defined",
+        "orderKey": 2,
+        "rootContentType": true,
+        "editTwigWithWysiwyg": true,
+        "webContent": true,
+        "autoPublish": false,
+        "active": true,
+        "templates": [],
+        "views": [],
+        "defaultValue": null,
+        "translationField": "",
+        "localeField": null,
+        "searchLinkDisplayRole": "not-defined",
+        "createLinkDisplayRole": "not-defined",
+        "versionTags": [],
+        "versionDateFromField": "",
+        "versionDateToField": ""
+    },
+    "replaced": []
+}

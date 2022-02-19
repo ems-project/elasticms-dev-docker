@@ -2,5 +2,21 @@
 {% trans_default_domain trans_default_domain %}
 
 {%- block request -%}
-    foobar
+    <html lang="{{ app.request.locale }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+        <title>Demo Reveal.JS</title>
+        <link rel="stylesheet" href="{{ asset('css/reveal.css', 'emsch') }}">
+    </head>
+    <body>
+    <div class="reveal">
+        <div class="slides">
+            <section>Slide 1</section>
+            <section>Slide 2</section>
+        </div>
+    </div>
+    <script src="{{ asset('js/reveal.js', 'emsch') }}"></script>
+    </body>
+    </html>
 {%- endblock request -%}

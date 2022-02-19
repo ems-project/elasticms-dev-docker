@@ -24,7 +24,7 @@ module.exports = {
     entry: {
         'index': './src/index.js',
         'admin': './src/admin.js',
-        'revealjs': './src/revealjs.js',
+        'reveal': './src/reveal.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

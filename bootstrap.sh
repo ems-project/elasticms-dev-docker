@@ -52,7 +52,7 @@ echo "Create/Update ContentTypes"
 ../demo-preview.sh ems:admin:update content-type page
 ../demo-preview.sh ems:admin:update content-type structure
 ../demo-preview.sh ems:admin:update content-type publication
-../demo-preview.sh ems:admin:update content-type slide_show
+../demo-preview.sh ems:admin:update content-type slideshow
 
 echo "Create/Update QuerySearches"
 ../demo-preview.sh ems:admin:update query-search pages
