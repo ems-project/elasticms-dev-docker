@@ -4,10 +4,7 @@
     
     {% set wyiwygReplacesDefault = { 
         'src="https://www.youtube.com/': 'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen src="https://www.youtube-nocookie.com/',
-        '%company_name%': 'replace.company_name'|trans,
-        '%Company_name%': 'replace.Company_name'|trans,
-        '%site_name%': 'replace.site_name'|trans,
-        '%Site_name%': 'replace.Site_name'|trans,
+
         '%toc%': '<div id="toc"><h2 class="not-in-toc">' ~ 'toc'|trans ~ '</h2></div>',
     } %}
     
