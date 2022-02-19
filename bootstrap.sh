@@ -55,6 +55,7 @@ echo "Create/Update QuerySearches"
 
 echo "Create/Update Dashboards"
 ../demo-preview.sh ems:admin:update dashboard welcome
+../demo-preview.sh ems:admin:update dashboard default-search
 
 echo "Create/Update Channels"
 ../demo-preview.sh ems:admin:update channel preview
