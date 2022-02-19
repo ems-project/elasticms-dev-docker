@@ -91,7 +91,8 @@
                             "orderKey": 0,
                             "parent": null,
                             "children": []
-                        }
+                        },
+                        "replaced": []
                     },
                     {
                         "class": "EMS\\CoreBundle\\Entity\\FieldType",
@@ -134,10 +135,12 @@
                             "orderKey": 1,
                             "parent": null,
                             "children": []
-                        }
+                        },
+                        "replaced": []
                     }
                 ]
-            }
+            },
+            "replaced": []
         },
         "labelField": "name",
         "colorField": "",
@@ -163,7 +166,7 @@
         "deleteRole": null,
         "trashRole": "ROLE_ADMIN",
         "ownerRole": null,
-        "orderKey": 2,
+        "orderKey": 3,
         "rootContentType": false,
         "editTwigWithWysiwyg": true,
         "webContent": false,
@@ -188,7 +191,8 @@
                     "orderKey": 0,
                     "public": false,
                     "role": null
-                }
+                },
+                "replaced": []
             }
         ],
         "defaultValue": null,
@@ -199,5 +203,6 @@
         "versionTags": [],
         "versionDateFromField": null,
         "versionDateToField": null
-    }
+    },
+    "replaced": []
 }
