@@ -15,7 +15,7 @@
         "businessIdField": "",
         "deleted": false,
         "askForOuuid": false,
-        "dirty": true,
+        "dirty": false,
         "color": "orange",
         "fieldType": {
             "class": "EMS\\CoreBundle\\Entity\\FieldType",
@@ -166,12 +166,12 @@
         "deleteRole": null,
         "trashRole": "ROLE_ADMIN",
         "ownerRole": null,
-        "orderKey": 3,
+        "orderKey": 6,
         "rootContentType": false,
         "editTwigWithWysiwyg": true,
         "webContent": false,
         "autoPublish": true,
-        "active": false,
+        "active": true,
         "templates": [],
         "views": [
             {

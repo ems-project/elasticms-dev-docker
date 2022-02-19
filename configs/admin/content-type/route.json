@@ -15,7 +15,7 @@
         "businessIdField": "",
         "deleted": false,
         "askForOuuid": false,
-        "dirty": true,
+        "dirty": false,
         "color": "orange",
         "fieldType": {
             "class": "EMS\\CoreBundle\\Entity\\FieldType",
@@ -392,15 +392,15 @@
         "editRole": "ROLE_ADMIN",
         "viewRole": "ROLE_ADMIN",
         "publishRole": "ROLE_ADMIN",
-        "deleteRole": null,
+        "deleteRole": "not-defined",
         "trashRole": "ROLE_ADMIN",
-        "ownerRole": null,
-        "orderKey": 2,
+        "ownerRole": "not-defined",
+        "orderKey": 5,
         "rootContentType": false,
         "editTwigWithWysiwyg": true,
         "webContent": false,
         "autoPublish": false,
-        "active": false,
+        "active": true,
         "templates": [],
         "views": [
             {
@@ -445,11 +445,11 @@
         "defaultValue": null,
         "translationField": "",
         "localeField": null,
-        "searchLinkDisplayRole": "ROLE_ADMIN",
+        "searchLinkDisplayRole": "not-defined",
         "createLinkDisplayRole": "ROLE_ADMIN",
         "versionTags": [],
-        "versionDateFromField": null,
-        "versionDateToField": null
+        "versionDateFromField": "",
+        "versionDateToField": ""
     },
     "replaced": []
 }

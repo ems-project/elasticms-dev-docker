@@ -49,6 +49,10 @@ echo "Create/Update ContentTypes"
 ../demo-preview.sh ems:admin:update content-type label
 ../demo-preview.sh ems:admin:update content-type route
 ../demo-preview.sh ems:admin:update content-type template
+../demo-preview.sh ems:admin:update content-type page
+../demo-preview.sh ems:admin:update content-type structure
+../demo-preview.sh ems:admin:update content-type publication
+../demo-preview.sh ems:admin:update content-type slide_show
 
 echo "Create/Update QuerySearches"
 ../demo-preview.sh ems:admin:update query-search pages
