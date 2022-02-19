@@ -60,3 +60,13 @@ echo "Create/Update Dashboards"
 echo "Create/Update Channels"
 ../demo-preview.sh ems:admin:update channel preview
 
+echo "Rebuild environments and activate content types"
+#../demo-preview.sh ems:admin:job rebuild-preview
+ ../demo-admin.sh ems:environment:rebuild preview
+#../demo-preview.sh ems:admin:job rebuild-live
+ ../demo-admin.sh ems:environment:rebuild live
+#../demo-preview.sh ems:admin:job activate-all-content-type
+ ../demo-admin.sh ems:contenttype:activate --all
+
+echo "Push templates, routes and translations"
+../demo-preview.sh ems:local:push --force
