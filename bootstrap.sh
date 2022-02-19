@@ -74,3 +74,4 @@ echo "Rebuild environments and activate content types"
 
 echo "Push templates, routes and translations"
 ../demo-preview.sh ems:local:push --force
+../demo-admin.sh ems:environment:align preview live --force
