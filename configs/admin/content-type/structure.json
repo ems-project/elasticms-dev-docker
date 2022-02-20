@@ -15,7 +15,6 @@
         "businessIdField": "",
         "deleted": false,
         "askForOuuid": false,
-        "dirty": true,
         "color": "aqua",
         "fieldType": {
             "class": "EMS\\CoreBundle\\Entity\\FieldType",
@@ -410,7 +409,6 @@
         "editTwigWithWysiwyg": true,
         "webContent": false,
         "autoPublish": false,
-        "active": true,
         "templates": [],
         "views": [],
         "defaultValue": null,
