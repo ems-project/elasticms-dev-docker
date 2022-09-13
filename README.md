@@ -353,3 +353,8 @@ You can check sent emails with [MailHog](http://mailhog.localhost/#).
 - Support Postgres 13 in elasticms and skeleton images
 - Add ESI support
 - Debug synchronize between storage services
+
+
+### Infrastructure model
+
+![Infrastructure model](.infragenie/infrastructure_model.png)
